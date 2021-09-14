@@ -1,0 +1,116 @@
+$ cc -v
+Using built-in specs.
+COLLECT_GCC=/usr/bin/cc
+COLLECT_LTO_WRAPPER=/usr/libexec/gcc/x86_64-redhat-linux/10/lto-wrapper
+OFFLOAD_TARGET_NAMES=nvptx-none
+OFFLOAD_TARGET_DEFAULT=1
+Target: x86_64-redhat-linux
+Configured with: ../configure --enable-bootstrap --enable-languages=c,c++,fortran,objc,obj-c++,ada,go,d,lto --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=http://bugzilla.redhat.com/bugzilla --enable-shared --enable-threads=posix --enable-checking=release --enable-multilib --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-gcc-major-version-only --with-linker-hash-style=gnu --enable-plugin --enable-initfini-array --with-isl --enable-offload-targets=nvptx-none --without-cuda-driver --enable-gnu-indirect-function --enable-cet --with-tune=generic --with-arch_32=i686 --build=x86_64-redhat-linux
+Thread model: posix
+Supported LTO compression algorithms: zlib zstd
+gcc version 10.1.1 20200507 (Red Hat 10.1.1-1) (GCC) 
+
+$ make clean; make ./pardiso_sym_dynamic
+rm pardiso_sym_dynamic pardiso_sym_dynamic.o
+cc -fopenmp -g   -c -o pardiso_sym_dynamic.o pardiso_sym_dynamic.c
+pardiso_sym_dynamic.c: In function 'main':
+pardiso_sym_dynamic.c:228:2: warning: implicit declaration of function 'pardiso_residual' [-Wimplicit-function-declaration]
+  228 |  pardiso_residual (&mtype, &n, a, ia, ja, &b[i*n], &x[i*n], &y[i*n], &normb, &normr);
+      |  ^~~~~~~~~~~~~~~~
+cc -fopenmp -o pardiso_sym_dynamic pardiso_sym_dynamic.o -L. -lpardiso600-GNU720-X86-64-RINLA -llapack -lblas -lgfortran -lquadmath -lgomp -lm
+
+  hrue@localhost: ~/p/inla/testing/test-pardiso-nhrs
+
+$ ./pardiso_sym_dynamic
+[PARDISO]: License check was successful ... 
+
+================  PARDISO: solving a symmetric indef.  system  ================
+
+
+Summary PARDISO 6.0.0: ( reorder to reorder )
+=======================
+
+Times:
+======
+
+      Time fulladj: 0.000011 s
+      Time reorder: 0.001074 s
+      Time symbfct: 0.000048 s
+      Time parlist: 0.000311 s
+      Time malloc : 0.000124 s
+      Time total  : 0.001955 s total - sum: 0.000388 s
+
+Statistics:
+===========
+ < Parallel Direct Factorization with #cores: >              4
+ <                                and #nodes: >              1
+ < Numerical Factorization with BLAS3 and O(n) synchronization >
+
+ < Linear system Ax = b>
+             #equations:                                     8
+             #non-zeros in A:                                18
+             non-zeros in A (%):                             28.125000
+             #right-hand sides:                              1
+
+< Factors L and U >
+             #columns for each panel:                        80
+             # of independent subgraphs:                     0
+ < preprocessing with state of the art partitioning metis>
+             #supernodes:                                    5
+             size of largest supernode:                      4
+             number of nonzeros in L                         29
+             number of nonzeros in U                         1
+             number of nonzeros in L+U                       30
+             number of perturbed pivots                      0
+             number of nodes in solve                        8
+             Gflop   for the numerical factorization:        0.000000
+
+Reordering completed ... 
+Number of nonzeros in factors  = 30
+Number of factorization GFLOPS = 0
+================  PARDISO: solving a symmetric indef.  system  ================
+
+
+Summary PARDISO 6.0.0: ( factorize to factorize )
+=======================
+
+Times:
+======
+
+      Time A to LU: 0.000000 s
+      Time numfct : 0.000041 s
+      Time malloc : 0.000001 s
+      Time total  : 0.000051 s total - sum: 0.000010 s
+
+Statistics:
+===========
+ < Parallel Direct Factorization with #cores: >              4
+ <                                and #nodes: >              1
+ < Numerical Factorization with BLAS3 and O(n) synchronization >
+
+ < Linear system Ax = b>
+             #equations:                                     8
+             #non-zeros in A:                                18
+             non-zeros in A (%):                             28.125000
+             #right-hand sides:                              1
+
+< Factors L and U >
+             #columns for each panel:                        80
+             # of independent subgraphs:                     0
+ < preprocessing with state of the art partitioning metis>
+             #supernodes:                                    5
+             size of largest supernode:                      4
+             number of nonzeros in L                         29
+             number of nonzeros in U                         1
+             number of nonzeros in L+U                       30
+             number of perturbed pivots                      0
+             number of nodes in solve                        8
+             Gflop   for the numerical factorization:        0.000000
+             Gflop/s for the numerical factorization:        0.001821
+
+Factorization completed ...
+At line 42 of file /home/oschenk/Work/pardiso/pardiso-git/pardiso/src/wr_test_cgs.F (unit = 6, file = 'stdout')
+Fortran runtime error: Missing initial left parenthesis in format
+
+
+

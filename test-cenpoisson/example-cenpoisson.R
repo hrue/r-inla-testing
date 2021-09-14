@@ -1,0 +1,1 @@
+/home/hrue/p/inla/r-inla/r-inla.org/doc/likelihood/example-cenpoisson.R

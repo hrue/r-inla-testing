@@ -1,0 +1,1 @@
+/home/hrue/p/inla/google-code/inla/r-inla.org/doc/latent/example-z.R
