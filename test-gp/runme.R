@@ -23,6 +23,7 @@ r = inla(y ~ 1+x,
                               prior = "pc.gevtail",
                               param = c(7, 0.25, 0.5)))), 
          control.predictor = list(compute=TRUE),
+         control.compute = list(config = TRUE), 
          verbose=TRUE)
 
     
@@ -32,3 +33,6 @@ plot(r$summary.fitted.values$mean, exp(eta),
 abline(a=0,b=1)
 inla.dev.new()
 plot(r, plot.prior=TRUE)
+
+a <- inla.posterior.sample(10, r)
+a[[1]]$hyperpar
