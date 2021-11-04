@@ -1,10 +1,16 @@
-n = 1000
-size = 1000
+library(INLA)
+inla.models <- get("inla.models", env = INLA:::inla.get.inlaEnv())
+inla.models$link$sslogit$status <- NULL
+assign("inla.models", inla.models, env = INLA:::inla.get.inlaEnv())
+rm(inla.models)
+
+n = 10000
+size = 1
 x = rnorm(n, s=0.2)
 eta = 2 + x
-sens = 0.9
-spec = 0.7
-fixed = FALSE
+sens = 0.85
+spec = 0.995
+fixed = TRUE
 p = 1/(1+exp(-eta))
 prob = sens * p + (1-spec)*(1 - p)
 y = rbinom(n, size=size,  prob=prob)
@@ -16,6 +22,8 @@ r = inla(y ~ 1 + x, data = data.frame(y, x, size),
         family = "binomial",
         Ntrials = size,
         verbose = TRUE,
+        inla.mode = "experimental", 
+        control.inla = list(cmin = 1, b.strategy = "keep"), 
         control.family = list(
                 control.link = list(
                         model = "sslogit",
@@ -31,3 +39,6 @@ r = inla(y ~ 1 + x, data = data.frame(y, x, size),
                                         fixed = fixed, 
                                         param = c(a, b(spec, a)))))))
 
+r$.args$control.inla$cmin <- 0
+r <- inla.rerun(r)
+summary(r)
