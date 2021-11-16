@@ -76,7 +76,7 @@ for(ii in 1:50)
                    family = "binomial",
                    data=inla.stack.data(stk.e), ## data 
                    control.predictor=list(compute=TRUE, A=inla.stack.A(stk.e)),
-                   control.inla = list(int.strategy = "ccd", bfgs.version = 3), 
+                   control.inla = list(int.strategy = "ccd", parallel.linesearch = FALSE), 
                    verbose = F)
     } else {
         r3 <- NULL
@@ -87,7 +87,7 @@ for(ii in 1:50)
               data=inla.stack.data(stk.e), ## data 
               control.predictor=list(compute=TRUE, 
                                      A=inla.stack.A(stk.e)),
-              control.inla = list(bfgs.version = 4), 
+              control.inla = list(parallel.linesearch = TRUE), 
               verbose = F)
     
     if (is.null(r3)) r3 <- r4

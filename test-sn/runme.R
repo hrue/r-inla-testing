@@ -1,11 +1,10 @@
 library(sn)
-set.seed(246)
-n = 300
+n = 6000
 x = rnorm(n, sd = 1)
 eta = 1+x
 skewness = 0.25
 y = numeric(n)
-prec <- 100
+prec <- 10000
 for(i in 1:n) {
     ## map moments to sn-parameters c(xi, omega, alpha)
     param = INLA:::inla.sn.reparam(moments = c(eta[i], 1/prec, skewness))
@@ -19,15 +18,12 @@ r = inla(y ~ 1+x,
              hyper = list(prec = list(
                               prior = "pc.prec",
                               param = c(3, 0.01)),
-                          skewness = list(
+                          skew = list(
                               prior = "normal",
-                              param = c(1, 2)
-                          ), 
-                          intercept = list(
-                              prior = "normal", 
-                              param = c(0, 0)
-                          ))),
-         verbose = T, 
-         control.inla = list(cmin = 0), 
-         control.fixed = list(remove.names = "(Intercept)"))
+                              param = c(0, 1)
+                          ))), 
+
+         verbose = T,
+         inla.mode = "experimental", 
+         control.inla = list(cmin = 0))
 summary(r)

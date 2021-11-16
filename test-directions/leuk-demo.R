@@ -6,6 +6,9 @@ require(INLA)
 require(lattice)
 source("utils.R")
 
+inla.setOption(inla.mode = "experimental")
+inla.setOption(inla.call = "inla.mkl.work")
+
 ## Read data:
 map = read.table("Leuk.map")
 data(Leuk)

@@ -1,7 +1,7 @@
 library(mvtnorm)
 set.seed(123)
 n <- 300
-m <- 20
+m <- 10
 N <- m*n
 A <- matrix(rnorm(n^2), n, n)
 S <- A %*% t(A)
@@ -9,7 +9,7 @@ S <- S / exp(mean(log(diag(S))))
 Q <- solve(S)
 y <- c(rmvnorm(m, sigma = S)) + rnorm(m*n, sd = 0.1)
 
-nc <- 20
+nc <- 10
 A <- matrix(rnorm(nc*n), nc, n)
 e <- rnorm(nc)
 constr <- list(A = A, e = e)
@@ -19,9 +19,7 @@ r <- inla(y ~ -1 + f(idx, model = "generic",
                      extraconstr = constr),
           inla.mode = "experimental", 
           data = data.frame(y, idx = rep(1:n, m), r = rep(1:m, each = n)),
-          num.threads = "2:2", 
+          num.threads = "2:4", 
           inla.call = "inla.mkl.work", 
           control.pardiso = list(nrhs = -1), 
           verbose = TRUE)
-
-          

@@ -393,7 +393,7 @@ for(i in 1:nmod){
                                    list()
                                ),
                                E = joint.data_cox$E..coxph,
-                               control.inla = list(control.vb = list(f.enable.limit = 50), cmin = 0.0, bfgs.version=4),
+                               control.inla = list(control.vb = list(f.enable.limit = 50), cmin = 0.0, parallel.linsearch=TRUE),
                                verbose = TRUE
                                ))
             if(class(JMinla)=="inla") {
