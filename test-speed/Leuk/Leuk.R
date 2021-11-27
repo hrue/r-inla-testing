@@ -1,19 +1,27 @@
 data(Leuk)
 g = system.file("demodata/Leuk.graph", package="INLA")
 
-inla.setOption(scale.model = TRUE)
+Leuk <- inla.rbind.data.frames(Leuk, Leuk, Leuk, Leuk, Leuk, Leuk)
+
+
 Leuk$time <- Leuk$time / max(Leuk$time)
 formula = inla.surv(time, cens) ~ sex + age +
     f(inla.group(wbc), model="rw2")+
     f(inla.group(tpi), model="rw2")+
     f(district,model="besag",graph = g)
 
-inla.setOption(num.threads = "8:1")
+inla.setOption(scale.model = TRUE)
+inla.setOption(num.threads = "2:1")
 ##inla.setOption(inla.call = "remote")
-inla.setOption(inla.call = NULL)
-r = inla(formula, family="coxph", data=Leuk)
+inla.setOption(inla.call = "inla.mkl.work")
+##inla.setOption(inla.call = NULL)
+
+##Sys.setenv(INLA_TRACE = 'Qx2')
+Sys.unsetenv('INLA_TRACE')
+
+r = inla(formula, family="coxph", data=Leuk, verbose = F)
 rr = inla(formula, family="coxph", data=Leuk,
-          inla.mode = "experimental")
+          inla.mode = "experimental", verbose = F)
 print(round(dig = 2,
             c(classic = r$cpu[2], 
               experimental = rr$cpu[2], 

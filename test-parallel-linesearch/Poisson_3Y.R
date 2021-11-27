@@ -3,7 +3,7 @@ library(PermAlgo)
 library(mvtnorm)
 inla.setOption(inla.mode="experimental")
 if (T) {
-    inla.setOption(num.threads = "104:1")
+    inla.setOption(num.threads = "52:1")
     inla.setOption(inla.call = "remote")
 } else {
     inla.setOption(num.threads = "8:1")
@@ -11,7 +11,7 @@ if (T) {
 }
 
 ##set.seed(123) # seed for data generation
-nmod <- 1 # number of models simulated
+nmod <- 1000 # number of models simulated
 Startmod <- 0 # to start at a specific model
 ####
 # 1 # data simulation
@@ -20,19 +20,19 @@ Startmod <- 0 # to start at a specific model
 nsujet=500 # number of indivduals
 
 # Biomarker 1
-b1_0=4 # intercept
+b1_0=1 # intercept
 b1_1=-0.1 # slope
 b1_2=0.1 # continuous covariate
 b1_3=-0.2 # binary covariate
 
 # Biomarker 2
-b2_0=2 # intercept
+b2_0=1.5 # intercept
 b2_1=-0.1 # slope
 b2_2=0.1 # continuous covariate
 b2_3=-0.2 # binary covariate
 
 # Biomarker 3
-b3_0=3 # intercept
+b3_0=2 # intercept
 b3_1=-0.1 # slope
 b3_2=0.1 # continuous covariate
 b3_3=-0.2 # binary covariate
@@ -93,6 +93,7 @@ Sigma=matrix(c(b1_int^2,cov_b1intslo,cov_b1intb2int,cov_b1intb2slo,cov_b1intb3in
                cov_b1intb2slo,cov_b1slob2slo,cov_b2intslo,b2_slo^2,cov_b2slob3int,cov_b2slob3slo,
                cov_b1intb3int,cov_b1slob3int,cov_b2intb3int,cov_b2slob3int,b3_int^2,cov_b3intslo,
                cov_b1intb3slo,cov_b1slob3slo,cov_b2intb3slo,cov_b2slob3slo,cov_b3intslo,b3_slo^2),ncol=6,nrow=6)
+Sigma <- Sigma/4
 
 mestime=seq(0,followup,gap) # measurement times
 timej=rep(mestime, nsujet) # time column 
@@ -129,11 +130,11 @@ JMinla <- NULL
 
 for(i in 1:nmod){
 
-    set.seed(i * 1235 )
+    ##set.seed(i * 1235 )
 
     skip_to_next <- FALSE
     print(paste("########################### Model: ", i, "/", nmod))
-    set.seed(i) # seed for data generation
+##set.seed(i) # seed for data generation
     JMinla <- NULL
 
 ### begin data generation
@@ -393,7 +394,7 @@ for(i in 1:nmod){
                                    list()
                                ),
                                E = joint.data_cox$E..coxph,
-                               control.inla = list(control.vb = list(f.enable.limit = 50), cmin = 0.0, parallel.linsearch=TRUE),
+                               control.inla = list(int.strategy = "eb", control.vb = list(f.enable.limit = 50), cmin = 0.0, parallel.linesearch=TRUE),
                                verbose = TRUE
                                ))
             if(class(JMinla)=="inla") {
@@ -403,9 +404,54 @@ for(i in 1:nmod){
                     JMinla <-  try(inla.rerun(JMinla))
                 }
             }
-                                        #graphics.off()
-                                        #plot(JMinla)
         }
+
+        cat("WITHPARALLELLINESEARCH\n")
+        print(JMinla$mlik)
+        print(summary(JMinla))
+        res.a <- JMinla
+
+        JMinla <- NULL
+        rer=0
+        while(class(JMinla)!="inla" & rer<=5){
+            if(rer!=0) print(paste("ERROR, try ", rer))
+            rer=rer+1
+            a_INLA <- Sys.time()
+            JMinla <- try(inla(formulaJ,family = c("poisson", "gaussian", "poisson", "gaussian", "poisson", "gaussian", cox_ext$family), 
+                               data=joint.data_cox,
+                               control.fixed = list(mean=0, prec=1, mean.intercept=0, prec.intercept=1), 
+                               control.family = list(
+                                   list(control.link = list(model = "log")),
+                                   list(hyper = list(prec = list(initial = 12, fixed=TRUE))),
+                                   list(control.link = list(model = "log")),
+                                   list(hyper = list(prec = list(initial = 12, fixed=TRUE))),
+                                   list(control.link = list(model = "log")),
+                                   list(hyper = list(prec = list(initial = 12, fixed=TRUE))),
+                                   list()
+                               ),
+                               E = joint.data_cox$E..coxph,
+                               control.inla = list(int.strategy = "eb", control.vb = list(f.enable.limit = 50), cmin = 0.0, parallel.linesearch=FALSE),
+                               verbose = TRUE
+                               ))
+            if(class(JMinla)=="inla") {
+                ## this indicate negative eigenvalue in Hessian
+                if (sum(abs(JMinla$misc$cov.intern[upper.tri(JMinla$misc$cov.intern)])) == 0) {
+                    print(" *** RERUN ***")
+                    JMinla <-  try(inla.rerun(JMinla))
+                }
+            }
+        }
+        cat("WITHOUTPARALLELLINESEARCH\n")
+        print(JMinla$mlik)
+        print(summary(JMinla))
+
+        res.b <- JMinla
+
+        cat("COMPARISON\n")
+        print(rbind(c(res.b$misc$nfunc, res.b$cpu[2], res.b$mlik[1]),
+                    c(res.a$misc$nfunc, res.a$cpu[2], res.a$mlik[1])))
+                    
+
         b_INLA <- Sys.time()
         if(class(JMinla)=="inla") {
             
