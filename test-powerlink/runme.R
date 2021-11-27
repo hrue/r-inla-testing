@@ -27,18 +27,19 @@ power.link <- function(power) {
     return(list(cdf = cdf, icdf = icdf, mean = m, sd = s))
 }
 
-ppow <- c()
-mm <- c()
-ss <- c()
-for(pow in seq(0.05, 5, by = 0.01)) {
-    a <- power.link(pow)
-    ppow <- c(ppow, pow)
-    mm <- c(mm, a$mean)
-    ss <- c(ss, a$sd)
-    print(c(pow, a$mean, a$sd))
+if (FALSE) {
+    ## compute mean and sd as a function of power
+    ppow <- c()
+    mm <- c()
+    ss <- c()
+    for(pow in seq(0.05, 5, by = 0.01)) {
+        a <- power.link(pow)
+        ppow <- c(ppow, pow)
+        mm <- c(mm, a$mean)
+        ss <- c(ss, a$sd)
+        print(c(pow, a$mean, a$sd))
+    }
 }
-
-
 
 n <- 300
 size <- 100
