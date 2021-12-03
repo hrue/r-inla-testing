@@ -67,10 +67,11 @@ r <- inla(y ~ 1 + x,
                                   hyper = list(
                                       intercept = list(initial = link$cdf(intercept),
                                                        prior = "normal", 
-                                                       param = c(0,1)), 
+                                                       param = c(0,1),
+                                                       fixed = TRUE), 
                                       power = list(initial = log(power),
                                                    param = c(0, 1), 
-                                                   fixed = FALSE)))),
+                                                   fixed = TRUE)))),
           num.threads = "4:1")
 summary(r)
 link$icdf(r$mode$theta[2])
