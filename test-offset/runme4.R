@@ -10,4 +10,3 @@ off.3 <- 1001:1010
 r <- inla(y ~ 1 + x + offset(off.1) + offset(off.2), offset = off.3,
           data = data.frame(y, x, off.1, off.2, off.3))
 cbind(r$offset.linear.predictor, off.1 + off.2 + off.3)
-

@@ -2,11 +2,11 @@ library(INLA)
 library(PermAlgo)
 library(mvtnorm)
 inla.setOption(inla.mode="experimental")
-if (T) {
+if (F) {
     inla.setOption(num.threads = "52:1")
     inla.setOption(inla.call = "remote")
 } else {
-    inla.setOption(num.threads = "8:1")
+    inla.setOption(num.threads = "4:1")
     inla.setOption(inla.call = "inla.mkl.work")
 }
 
