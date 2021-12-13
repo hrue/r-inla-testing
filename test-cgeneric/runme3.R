@@ -1,25 +1,29 @@
 
-INLA:::inla.my.update(b = T)
+INLA:::inla.my.update()
+inla.setOption(inla.mode = "classic")
 inla.setOption(inla.mode = "experimental")
 inla.setOption(num.threads = "4:1")
+inla.setOption(inla.call = "inla.mkl.work")
+inla.setOption(inla.call = "inla.valgrind")
 
 system("make -B")
-n <- 1000
+n <- 10
 y <- rnorm(n)
 
 r <- inla(
     y ~ 1 + f(idx, model = "iid", hyper = list(prec = list(param = c(1, 1)))), 
-    data = data.frame(y, idx = 1:n),
+    data = data.frame(y, idx = 1:n), verbose = T, 
     control.family = list(hyper = list(prec = list(initial = 12, fixed = TRUE))))
+stop("XXXXXXXXXXXXX")
 
 rmodel <- inla.rgeneric.define(inla.rgeneric.iid.model, n = n)
 rr <- inla(
     y ~ 1 + f(idx, model = rmodel), 
     data = data.frame(y, idx = 1:n),
     control.family = list(hyper = list(prec = list(initial = 12, fixed = TRUE))),
-    verbose = TRUE)
+    verbose = !TRUE)
 
-cmodel <- inla.cgeneric.define(model = "inla_cgeneric_iid_model", shlib = "cgeneric-demo.so", n = n, debug = FALSE,
+cmodel <- inla.cgeneric.define(model = "inla_cgeneric_iid_model", shlib = "cgeneric-demo.so", n = n, debug = !FALSE,
                                x = 1.0*(1:2),
                                ix = 1L:3L,
                                ch = "asd",
@@ -30,7 +34,7 @@ cmodel <- inla.cgeneric.define(model = "inla_cgeneric_iid_model", shlib = "cgene
 
 rc <- inla(
     y ~ 1 + f(idx, model = cmodel), 
-    data = data.frame(y, idx = 1:n),
+    data = data.frame(y = c(y, y), idx = rep(1:n, 2)),
     control.family = list(hyper = list(prec = list(initial = 12, fixed = TRUE))),
     verbose = TRUE)
 

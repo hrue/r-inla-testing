@@ -1,4 +1,5 @@
-CFLAGS = -Wall -fpic -g3 -O3 -march=native
+CC = gcc
+CFLAGS = -Wall -fpic -g3 -O
 
 cgeneric-demo.so : cgeneric-demo.o
 	$(CC) -shared -o $@ $^
