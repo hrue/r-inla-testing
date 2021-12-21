@@ -22,6 +22,6 @@ inla.setOption(inla.call = "inla.mkl.work")
 ##r = inla(formula, family="coxph", data=Leuk)
 rr = inla(formula, family="coxph", data=Leuk,
           ##control.inla = list(parallel.linesearch = TRUE), 
-          inla.mode = "experimental", verbose = F)
+          inla.mode = "experimental", verbose = T, num.threads = "4:2")
 print(rr$cpu[2])
 ##print(round(dig = 2, c(classic = r$cpu[2], experimental = rr$cpu[2], ratio = r$cpu[2]/rr$cpu[2])))

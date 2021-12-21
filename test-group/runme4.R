@@ -26,7 +26,7 @@ y = as.vector(x) + rnorm(nrow*ncol*ntime, sd = s)
 
 formula = y ~ f(i, model="matern2d", nrow=nrow, ncol=ncol, group = time,  control.group = list(model="ar1")) 
 r = inla(formula, data = data.frame(x, i), verbose=T,
-        control.data = list(initial = log(1/s^2),  fixed=TRUE))
+        control.family = list(initial = log(1/s^2),  fixed=TRUE))
 
 ## estimate
 for(time in 1:ntime) {
