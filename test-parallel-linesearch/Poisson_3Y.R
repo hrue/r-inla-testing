@@ -395,7 +395,7 @@ for(i in 1:nmod){
                                ),
                                E = joint.data_cox$E..coxph,
                                control.inla = list(int.strategy = "eb", control.vb = list(f.enable.limit = 50), cmin = 0.0, parallel.linesearch=TRUE),
-                               verbose = TRUE
+                               verbose = TRUE, safe = T
                                ))
             if(class(JMinla)=="inla") {
                 ## this indicate negative eigenvalue in Hessian
@@ -431,7 +431,7 @@ for(i in 1:nmod){
                                ),
                                E = joint.data_cox$E..coxph,
                                control.inla = list(int.strategy = "eb", control.vb = list(f.enable.limit = 50), cmin = 0.0, parallel.linesearch=FALSE),
-                               verbose = TRUE
+                               verbose = TRUE, safe = T
                                ))
             if(class(JMinla)=="inla") {
                 ## this indicate negative eigenvalue in Hessian

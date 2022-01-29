@@ -20,9 +20,9 @@ formula3 = Y ~ 1 +
 r = inla(formula3,family="poisson",data=Germany,E=E,
          verbose = TRUE,
          inla.call = "inla.mkl.work",
-         num.threads = "8:1")
+         num.threads = "4:1")
 rr = inla(formula3,family="poisson",data=Germany,E=E,
          verbose = TRUE,
          inla.call = INLA:::inla.call.builtin(), 
-         num.threads = "8:1")
+         num.threads = "4:1")
 r$mlik - rr$mlik
