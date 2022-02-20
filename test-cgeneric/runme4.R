@@ -22,7 +22,7 @@ r <- inla(
     control.family = list(hyper = list(prec = list(initial = log(1/s^2), fixed = TRUE))))
 
 cmodel <- inla.cgeneric.define(model = "inla_cgeneric_ar1_model", shlib = "cgeneric-demo.so",
-                               n = n, debug = TRUE)
+                               n = n, debug = FALSE)
 rc <- inla(
     y ~ -1 + f(idx, model = cmodel), 
     data = data.frame(y, idx = 1:n),

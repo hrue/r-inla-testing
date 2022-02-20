@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+NTIMES=9
+THREADS="1:1 4:1 8:1 4:2"
+stopfile="STOP"
+timeout=60
+
+echo "Create file [$stopfile], to stop early"
+runall () {
+    
+    HOST=$1
+    USERNAME=$2
+    CMD=$3
+    MODEL=$4
+    DIR=tmp/run-tests-$RANDOM$RANDOM
+    
+    im="inla.model"
+    ssh $USERNAME@$HOST mkdir -p $DIR/$MODEL
+    rsync -auL $MODEL/. $USERNAME@$HOST:$DIR/.
+    
+    for threads in $THREADS; do
+	for times in $(seq 1 $NTIMES) ; do
+	    if [ ! -f $stopfile ]; then
+		echo $HOST $USERNAME $CMD $threads $times $(ssh $USERNAME@$HOST "cd $DIR; timeout $timeout $CMD -v -t$threads -P experimental Model.ini | grep Total | grep seconds")
+	    fi
+	done
+    done
+}
+
+
+rm -f $stopfile
+rm -f RES.*
+##runall kw-18302.kaust.edu.sa rueh /Library/Frameworks/R.framework/Versions/4.1-arm64/Resources/library/INLA/bin/mac.arm64/inla.run inla.model > RES.M1 2>&1 &
+##runall kw60890.kaust.edu.sa rueh /home/rueh/R/x86_64-pc-linux-gnu-library/4.1/INLA/bin/linux/64bit/inla.mkl.run inla.model > RES.server2  2>&1  &
+
+##THREADS="1:1"
+##runall localhost hrue /home/hrue/bin/inla.mkl.work inla.model  > RES.localhost 2>&1 &
+##runall localhost hrue /home/hrue/bin/inla.mkl inla.model > RES.localhost.ref 2>&1 &
+
+runall kw-18302.kaust.edu.sa rueh /Library/Frameworks/R.framework/Versions/4.1-arm64/Resources/library/INLA/bin/mac.arm64/inla.run leuk-demo-inla-model > RES.M1 2>&1 &
+runall kw60890.kaust.edu.sa rueh /home/rueh/R/x86_64-pc-linux-gnu-library/4.1/INLA/bin/linux/64bit/inla.mkl.run leuk-demo-inla-model > RES.server2  2>&1  &

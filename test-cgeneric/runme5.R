@@ -6,6 +6,6 @@ system("make -B")
 n <- 5
 cmodel <- inla.cgeneric.define(model = "inla_cgeneric_ar1_model", shlib = "cgeneric-demo.so",n = n)
 ##cmodel <- inla.cgeneric.define(model = "inla_cgeneric_iid_model", shlib = "cgeneric-demo.so",n = n)
-r <- inla.cgeneric.q(cmodel)
+inla.cgeneric.q(cmodel)
 
 

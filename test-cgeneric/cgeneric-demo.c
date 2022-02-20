@@ -152,6 +152,7 @@ double *inla_cgeneric_ar1_model(inla_cgeneric_cmd_tp cmd, double *theta, inla_cg
 {
 	// this reimplement `inla.rgeneric.ar1.model` using cgeneric
 
+	int debug = 0;
 	double *ret = NULL, prec, lprec, rho, rho_intern;
 
 	if (theta) {
@@ -204,6 +205,12 @@ double *inla_cgeneric_ar1_model(inla_cgeneric_cmd_tp cmd, double *theta, inla_cg
 		// return c(N, M, Qij) in the same order as defined in INLA_CGENERIC_GRAPH
 		// where M is the length of Qij
 
+		if (debug) {
+			static int count = 0;
+			count++;
+			printf("CALL Q %d\n", count);
+		}
+
 		double param = prec / (1.0 - SQR(rho));
 		int m = N + N - 1;
 		int offset, i, k;
@@ -223,13 +230,18 @@ double *inla_cgeneric_ar1_model(inla_cgeneric_cmd_tp cmd, double *theta, inla_cg
 
 	case INLA_CGENERIC_MU:
 	{
+		if (debug) {
+			static int count = 0;
+			count++;
+			printf("CALL MU %d\n", count);
+		}
+		
 		// return (N, mu)
 		// if N==0 then mu is not needed as its taken to be mu[]==0
-
-		ret = Calloc(N + 1, double);
+		ret = Calloc(1 + N, double);
 		ret[0] = N;
 		for(int i = 0; i < N; i++) {
-			ret[1 + i] =  i;
+			ret[1 + i] =  i / (100.0 * (N - 1.0));
 		}
 		break;
 	}
