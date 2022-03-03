@@ -5,14 +5,19 @@ formula = y ~ -1 + f(time, model="rw2", constr = F, cyclic=TRUE,
                      hyper =  list(prec =  list(prior = "pc.prec",
                                                 param = c(0.5, 0.01))))
 
+## to define something else that all data, use groups or selection.
+
+## groups are list of list of nodes. NULL if none
 groups <- rep(list(list()), n)
 for(i in seq(1, n, by = 150)) {
     groups[[i]] <- (((i-2):(i+2) - 1 + n) %% n) + 1
 }
+
+## selection is a list of nodes (data-points) to use
 selection <- seq(1, n, by = 150)
 
 r = inla(formula, family="binomial", Ntrials=n, data=Tokyo,
-         verbose = TRUE,
+         verbose = !TRUE,
          inla.mode = "experimental",
          num.threads = "4:1", 
          ##control.inla = list(int.strategy = "eb"), 
