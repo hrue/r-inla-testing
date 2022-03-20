@@ -9,5 +9,6 @@ r <- inla(y ~ 1 + x,
          family = "xbinomial",
          Ntrials = ntrials,
          scale = q, 
+         keep = T, 
          data = data.frame(y, x, q, ntrials))
 summary(r)

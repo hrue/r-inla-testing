@@ -1,7 +1,7 @@
 # generate R code for type IV interaction model in general using
 
 ## set time effect assuming an RW1¨
-time.dim = 25
+time.dim = 20
 Q.rw1 = INLA:::inla.rw(time.dim, order=1, scale.model=TRUE, sparse=TRUE)
 
 ## set the spatial effect using one of three graph files
@@ -77,9 +77,9 @@ r <- inla(formula.constr, family="gaussian",
           data = data,
           scale = prec.sc, 
           control.predictor = list(compute=TRUE),
-          control.compute = list(config=TRUE),
+          control.compute = list(smtp = "pardiso"),
           verbose = TRUE, keep = TRUE, 
-          inla.call = "inla.mkl.work", 
-          num.threads = "4:1", 
-          inla.arg = "-v -t4:1 -b -P")
+          inla.call = "inla.mkl.work",
+          inla.mode = "experimental", 
+          num.threads = "4:-1")
 

@@ -1,3 +1,5 @@
+set.seed(123)
+
 n = 5
 Cov = matrix(runif(n^2), n, n)
 Cov = Cov %*% t(Cov)
@@ -40,12 +42,11 @@ for(i in 1:n) {
 
 y = rep(0, n)
 r = inla(formula,
-          data = data.frame(y, idx, idx2),
-          lincomb = lc, verbose=TRUE, keep=TRUE,
-          control.family = list(hyper = list(prec = list(initial = -12, fixed=TRUE))), 
-          control.results = list(return.marginals.random=FALSE), 
-          control.inla = list(lincomb.derived.correlation.matrix = TRUE, 
-              int.strategy = "grid",  diff.logdens = 10))
+         data = data.frame(y, idx, idx2),
+         lincomb = lc, verbose=TRUE, keep=TRUE,
+         control.family = list(hyper = list(prec = list(initial = -12, fixed=TRUE))), 
+         control.inla = list(lincomb.derived.correlation.matrix = TRUE))
+
 
 mean(abs(r$misc$lincomb.derived.correlation.matrix - Corr.B))
 mean(abs(r$misc$lincomb.derived.covariance.matrix - Cov.B))

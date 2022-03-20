@@ -14,7 +14,7 @@ for(i in seq(1, n, by = 10)) {
 }
 
 ## selection is a list of nodes (data-points) to use
-##selection <- seq(1, n, by = 150)
+selection <- seq(1, n, by = 150)
 
 r = inla(formula, family="binomial", Ntrials=n, data=Tokyo,
          verbose = TRUE,
@@ -24,10 +24,10 @@ r = inla(formula, family="binomial", Ntrials=n, data=Tokyo,
          control.compute = list(cpo = T, 
                                 control.gcpo = list(enable = TRUE,
                                                     group.size = 1, 
-                                                    verbose = !TRUE
+                                                    verbose = !TRUE, 
                                                     ## either of these give the same result
                                                     ##groups = groups
-                                                    ##selection = selection
+                                                    selection = selection
                                                     )))
 
 plot(r$cpo$cpo, r$gcpo$gcpo, pch = 1)

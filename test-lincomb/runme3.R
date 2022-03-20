@@ -1,5 +1,5 @@
 ## A simple model
-n = 4
+n = 8
 a = rnorm(n)
 b = rnorm(n)
 stopifnot(n/2 == n %/% 2)
@@ -17,28 +17,24 @@ lc1 = inla.make.lincomb(a=2, b=3,
         idxx = c(NA,NA,3))
 names(lc1) = "lc1"
 
-lc2 = inla.make.lincomb(Predictor = c(NA, 1, -2, rep(NA,n-2)), "(Intercept)" = 1)
+lc2 = inla.make.lincomb(idx = c(1, 2), "(Intercept)" = 1)
 names(lc2) = "lc2"
 all.lc = c(lc1,lc2)
 
-inla.setOption("inla.call", "inla")
+inla.setOption(inla.call = "inla.mkl")
 r = inla(formula, data = data.frame(a,b,y,idx,idxx),
         lincomb = all.lc,
         control.compute = list(return.marginals=TRUE),
-        control.inla = list(lincomb.derived.only=FALSE),
-        control.lincomb = list(precision = 10^8),
         control.predictor = list(compute=TRUE),
         control.family = list(initial=10, fixed=TRUE))
 
-inla.setOption("inla.call", "inla.work")
+inla.setOption(inla.call = "inla.mkl.work")
 r.work = inla(formula, data = data.frame(a,b,y,idx,idxx),
-        lincomb = all.lc,
-        control.inla = list(lincomb.derived.only=FALSE),
-        control.lincomb = list(precision = 10^8),
+        lincomb = all.lc, verbose = T, 
         control.predictor = list(compute=TRUE),
         control.family = list(initial=10, fixed=TRUE))
 
-print(r$summary.lincomb[, "mean"])
-print(r.work$summary.lincomb[, "mean"])
-print(r$summary.lincomb[, "sd"])
-print(r.work$summary.lincomb[, "sd"])
+print(r$summary.lincomb.derived[, "mean"])
+print(r.work$summary.lincomb.derived[, "mean"])
+print(r$summary.lincomb.derived[, "sd"])
+print(r.work$summary.lincomb.derived[, "sd"])

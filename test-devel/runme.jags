@@ -1,0 +1,5 @@
+model {
+    y ~ dpois(lambda)
+    log(lambda) <- mu
+    mu ~ dnorm(0, 1)
+}

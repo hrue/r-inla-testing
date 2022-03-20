@@ -5,7 +5,7 @@ make.S <- function(n) {
     return(S)
 }
     
-inla.setOption(inla.call = "inla.mkl.work")
+##inla.setOption(inla.call = "inla.mkl.work")
 inla.setOption(smtp = "band")
 inla.setOption(num.threads = "1:1")
 ##set.seed(123)

@@ -1,7 +1,7 @@
 data(Leuk)
 g = system.file("demodata/Leuk.graph", package="INLA")
 
-##Leuk <- inla.rbind.data.frames(Leuk, Leuk, Leuk, Leuk, Leuk, Leuk)
+Leuk <- inla.rbind.data.frames(Leuk, Leuk, Leuk, Leuk, Leuk, Leuk)
 
 
 Leuk$time <- Leuk$time / max(Leuk$time)
@@ -16,7 +16,6 @@ inla.setOption(num.threads = "4:1")
 inla.setOption(inla.call = "inla.mkl.work")
 ##inla.setOption(inla.call = NULL)
 
-Sys.setenv(INLA_gcpo = TRUE)
 ##Sys.setenv(INLA_TRACE = 'Qx2')
 ##Sys.unsetenv('INLA_TRACE')
 
@@ -24,7 +23,12 @@ Sys.setenv(INLA_gcpo = TRUE)
 rr = inla(formula, family="coxph", data=Leuk,
           control.hazard = list(n.intervals = 10), 
           ##control.inla = list(parallel.linesearch = TRUE), 
-          keep = T, 
-          inla.mode = "experimental", verbose = T, num.threads = "1:1")
+          control.compute = list(cpo = T,
+                                 control.gcpo = list(enable = TRUE,
+                                                     group.size = 25)), 
+          inla.mode = "experimental",
+          verbose = T,
+          num.threads = "25:2",
+          inla.call = "remote")
 print(rr$cpu[2])
 ##print(round(dig = 2, c(classic = r$cpu[2], experimental = rr$cpu[2], ratio = r$cpu[2]/rr$cpu[2])))
