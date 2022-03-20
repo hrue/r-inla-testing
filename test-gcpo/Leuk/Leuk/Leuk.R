@@ -25,10 +25,11 @@ rr = inla(formula, family="coxph", data=Leuk,
           ##control.inla = list(parallel.linesearch = TRUE), 
           control.compute = list(cpo = T,
                                  control.gcpo = list(enable = TRUE,
-                                                     group.size = 25)), 
+                                                     group.size = 9)), 
           inla.mode = "experimental",
           verbose = T,
-          num.threads = "25:2",
-          inla.call = "remote")
+          keep = T, 
+          num.threads = "4:1",
+          inla.call = "inla.mkl.work")
 print(rr$cpu[2])
-##print(round(dig = 2, c(classic = r$cpu[2], experimental = rr$cpu[2], ratio = r$cpu[2]/rr$cpu[2])))
+
