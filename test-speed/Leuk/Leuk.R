@@ -2,7 +2,7 @@ data(Leuk)
 g = system.file("demodata/Leuk.graph", package="INLA")
 
 Leuk <- inla.rbind.data.frames(Leuk, Leuk, Leuk, Leuk, Leuk, Leuk)
-Leuk <- inla.rbind.data.frames(Leuk, Leuk, Leuk, Leuk, Leuk, Leuk)
+Leuk <- inla.rbind.data.frames(Leuk, Leuk, Leuk)
 
 Leuk$time <- Leuk$time / max(Leuk$time)
 formula = inla.surv(time, cens) ~ sex + age +
@@ -22,6 +22,7 @@ inla.setOption(inla.call = "inla.mkl.work")
 ##r = inla(formula, family="coxph", data=Leuk)
 rr = inla(formula, family="coxph", data=Leuk,
           control.hazard = list(n.intervals = 50), 
+          keep = T, 
           ##control.inla = list(parallel.linesearch = TRUE), 
           inla.mode = "experimental", verbose = T, num.threads = "4:1")
 print(rr$cpu[2])

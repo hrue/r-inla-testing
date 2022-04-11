@@ -29,6 +29,7 @@ if (!exists("do.print")) { do.print = FALSE }
 if (!exists("pm10.path")) { pm10.path = "Covariates/" }
 
 library(INLA)
+inla.setOption(inla.mode = "experimental")
 library(fields)
 library(abind)
 library(lattice)
@@ -224,8 +225,6 @@ if (force.rerun || !exists("result")) {
                  family="gaussian",
                  control.predictor=list(A=inla.stack.A(stack), compute=TRUE),
                  control.compute=list(cpo=FALSE),
-                 inla.call = "inla.mkl.work",
-                 inla.arg = "-v -b -t4:1 ", 
                  keep=TRUE, verbose=TRUE)
     }
     print(summary(result))
