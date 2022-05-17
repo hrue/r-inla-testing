@@ -35,6 +35,7 @@ formula = y ~ f(i, model="besagproper",  graph = graph.file,
 r = inla(formula,
         data = data.frame(y, i, replicate),
         family = "gaussian",
+        verbose = T, 
         control.family = list(
                 hyper = list(
                         prec = list(

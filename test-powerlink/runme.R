@@ -41,7 +41,7 @@ if (FALSE) {
     }
 }
 
-n <- 300
+n <- 3000
 size <- 100
 power <- 0.15
 link <- power.link(power)
@@ -68,10 +68,10 @@ r <- inla(y ~ 1 + x,
                                       intercept = list(initial = link$cdf(intercept),
                                                        prior = "normal", 
                                                        param = c(0,1),
-                                                       fixed = TRUE), 
+                                                       fixed = !TRUE), 
                                       power = list(initial = log(power),
                                                    param = c(0, 1), 
-                                                   fixed = TRUE)))),
-          num.threads = "4:1")
+                                                   fixed = !TRUE)))),
+          num.threads = "2:4")
 summary(r)
 link$icdf(r$mode$theta[2])

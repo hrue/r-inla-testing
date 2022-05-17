@@ -21,7 +21,7 @@ r = inla(y ~ 1 + x,
                      skew = list(initial = 0,
                                  fixed = TRUE),
                      intercept = list(param = c(0, 1))))),
-         twostage = TRUE)
+         inla.mode = "experimental")
 
 rr = inla(y ~ 1 + x,
          family = "binomial",

@@ -1,6 +1,4 @@
-INLA:::inla.my.update()
-INLA:::inla.my.update()
-inla.setOption(inla.call = "remote")
+##inla.setOption(inla.call = "remote")
 
 
 # Constraints project - The big model we want to fit for Malawi
@@ -169,6 +167,7 @@ formula <- y ~ 1 + urban +
     diagonal = diag.value, 
     rankdef = N * Age_num + S * Age_num + N * S - N - S - Age_num + 1) 
 
+Sys.setenv(INLA_TRACE = '*')
 ptm <- Sys.time()
 mod <- inla(formula,
             data = inla_dat,
@@ -181,7 +180,10 @@ mod <- inla(formula,
             Ntrials = Ntrials,
             control.fixed = list(prec.intercept = 1, prec = 1),
             control.compute = list(config = TRUE),
-            inla.arg = "-v -b -t22:4 -P -B1", 
+            control.inla = list(cmin = 0), 
+            inla.call = "",  keep = T, 
+            num.threads = "11:4",
+            inla.mode = "experimental", 
             verbose = TRUE)
             
 print(Sys.time()-ptm)
