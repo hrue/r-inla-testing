@@ -1,3 +1,5 @@
+inla.setOption(inla.mode = "experimental")
+
 data(Tokyo)
 formula = y ~ -1 + f(time, model="rw2", cyclic=TRUE,
                      ## fix the precision here so you can see the effect better
@@ -18,10 +20,7 @@ rr = inla(formula,
           Ntrials=n,
           data=Tokyo,
           control.inla = list(strategy = "gaussian", 
-                              control.vb = list(enable = TRUE,
-                                                refinement = 5,
-                                                max.correct = 0.5,
-                                                verbose = TRUE)), 
+                              control.vb = list(enable = FALSE)), 
           verbose = TRUE)
 
 rrr = inla(formula,

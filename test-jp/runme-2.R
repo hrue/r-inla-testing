@@ -1,8 +1,13 @@
+inla.setOption(num.threads = "2:1")
+##inla.setOption(inla.call = "inla.mkl.work")
+
 n = 100
 idx = 1:n
 y = rnorm(n)
 r = inla(y ~ 1 + f(idx, hyper = list(prec = list(param = c(10, 1)))), 
          family = "gaussian",
+         safe = T,
+         verbose = T, 
          control.family = list(hyper = list(prec = list(param = c(100, 10)))), 
          data = data.frame(y, idx))
 
@@ -25,7 +30,8 @@ rr = inla(y ~ 1 + f(idx, model=iid),
           family = "gaussian",
           data = data.frame(y, idx),
           control.expert = list(jp = jpr),
-          verbose = TRUE)
+          verbose = TRUE,
+          safe = T)
 
 r$mlik - rr$mlik
 for(theta in 1:2) {
