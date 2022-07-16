@@ -1,9 +1,9 @@
 library(INLA)
 
-INLA:::inla.my.update(b = T)
+##INLA:::inla.my.update(b = T)
 inla.setOption(inla.mode = "experimental")
 inla.setOption(scale.model = TRUE)
-inla.setOption(num.threads = "4:1")
+inla.setOption(num.threads = "1:1")
 inla.setOption(inla.call = "inla.mkl.work")
 
 data(Germany)
@@ -28,25 +28,26 @@ r = inla(formula3,
              cpo = T, 
              control.gcpo = list(
                  enable = TRUE, 
-                 group.size = 30,
-                 group.size.max = 3,
+                 num.level.sets = 3, 
                  strategy = "prior",
                  remove = c("region"), 
                  verbose = TRUE)))
 
-source(system.file("demodata/Bym-map.R", package="INLA"))
+if (FALSE) {
+    source(system.file("demodata/Bym-map.R", package="INLA"))
 
-n <- nrow(Germany)
-m <- 3
-par(mfrow = c(m, m))
-for(ii in 240 + 0:8) {
-    i <- ii+1
-    if (ii > 9 && ii %% m^2 == 0) {
-        dev.new()
-        par(mfrow = c(m, m))
+    n <- nrow(Germany)
+    m <- 3
+    par(mfrow = c(m, m))
+    for(ii in 240 + 0:8) {
+        i <- ii+1
+        if (ii > 9 && ii %% m^2 == 0) {
+            dev.new()
+            par(mfrow = c(m, m))
+        }
+        x <- rep(1, n)
+        x[r$gcpo$groups[[i]]$idx] <- 0
+        x[i] <- 2
+        Bym.map(x)
     }
-    x <- rep(1, n)
-    x[r$gcpo$groups[[i]]$idx] <- 0
-    x[i] <- 2
-    Bym.map(x)
 }

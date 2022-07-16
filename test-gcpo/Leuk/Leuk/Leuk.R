@@ -23,10 +23,11 @@ inla.setOption(inla.call = "inla.mkl.work")
 ##r = inla(formula, family="coxph", data=Leuk)
 rr = inla(formula, family="coxph", data=Leuk,
           control.hazard = list(n.intervals = 10), 
-          control.inla = list(control.vb = list(f.limit.enable = 20)), 
+          control.inla = list(control.vb = list(f.enable.limit = 20)), 
           control.compute = list(cpo = T,
                                  control.gcpo = list(enable = TRUE,
-                                                     group.size = 1)), 
+                                                     verbose = TRUE, 
+                                                     num.level.sets = 1)), 
           inla.mode = "experimental",
           verbose = T,
           keep = T, 

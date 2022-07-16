@@ -37,3 +37,23 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+
+*.eps
+
+environment
+pardiso.lic
+data.files/
+gmon.out
+inla.model*
+inla.model-*
+
+
+
+
+
+
+*.o
+
+*.so
+
+*.pdf
