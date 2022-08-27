@@ -3,7 +3,7 @@ library(INLA)
 ##INLA:::inla.my.update(b = T)
 inla.setOption(inla.mode = "experimental")
 inla.setOption(scale.model = TRUE)
-inla.setOption(num.threads = "1:1")
+inla.setOption(num.threads = "4:1")
 inla.setOption(inla.call = "inla.mkl.work")
 
 data(Germany)
@@ -23,14 +23,14 @@ r = inla(formula3,
          E=E,
          verbose = TRUE,
          ##control.fixed = list(prec.intercept = 1), 
-         ##control.inla = list(int.strategy = "eb",
+         control.inla = list(int.strategy = "eb"),
          ##control.vb = list(enable = FALSE)), 
          control.compute = list(
              cpo = T, 
              control.gcpo = list(
-                 enable = TRUE, 
-                 group.size = 5,
-                 verbose = TRUE)))
+               enable = TRUE, 
+               num.level.sets = 5,
+               verbose = TRUE)))
 stop("XXXXXXXXXXX")
 
 source(system.file("demodata/Bym-map.R", package="INLA"))
