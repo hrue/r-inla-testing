@@ -27,10 +27,7 @@ r = inla(formula, data = data.frame(a,b,y),
         ##
         ## force noise variance to be essiatially zero
         ##
-        control.family = list(initial=10, fixed=TRUE),
-
-        ##  (this is the default option)
-        control.inla = list(lincomb.derived.only=FALSE))
+        control.family = list(initial=10, fixed=TRUE))
 
 ## to verify the result, we can compare the mean but the variance and
 ## marginal cannot be computed from the simpler marginals alone.
@@ -50,8 +47,7 @@ print(c(lc1.1 = lc1.1, lc1.2 = lc1.2))
 
 r = inla(formula, data = data.frame(a,b,y),
         lincomb = lc1,
-        control.family = list(initial=10, fixed=TRUE),
-        control.inla = list(lincomb.derived.only=FALSE))
+        control.family = list(initial=10, fixed=TRUE))
 
 lc1.3= r$summary.lincomb["lincomb.lc1", "mean"]
 print(c(lc1.1 = lc1.1, lc1.2 = lc1.2, lc1.3 = lc1.3))
@@ -80,9 +76,10 @@ r = inla(formula, data = data.frame(a,b,y),
         lincomb = all.lc,
         control.predictor = list(compute=TRUE),
         control.family = list(initial=10, fixed=TRUE),
-    control.inla = list(lincomb.derived.correlation.matrix=TRUE,
-                        lincomb.derived.only = FALSE), 
-        keep=TRUE)
+        control.inla = list(lincomb.derived.correlation.matrix=TRUE),
+        keep = TRUE,
+        safe = FALSE, 
+        verbose = T)
 
 lc2.1 = r$summary.linear.predictor$mean[2] + r$summary.fixed["(Intercept)", "mean"]
 lc2.2 = r$summary.lincomb["lincomb.lc2.derived", "mean"]
@@ -111,7 +108,6 @@ print(names(lc.many))
 ## using c()
 r = inla(formula, data = data.frame(a,b,y),
     lincomb = c(lc.many, all.lc),
-    control.inla = list(lincomb.derived.only = FALSE), 
     control.family = list(initial=10, fixed=TRUE))
 
 print(r$summary.lincomb.derived[, "mean"])
@@ -120,14 +116,13 @@ print(r$summary.lincomb.derived[, "mean"])
 ## if 'wa' and 'wb' is defined in a matrix, like
 A = cbind(a=wa, b=wb)
 
-## then we can define the same lincombs using inla.uncbind(),
-lc.many = inla.make.lincombs( inla.uncbind(A) )
+lc.many = inla.make.lincombs(a = A[, "a"],  b = A[, "b"])
 
 ## we can join this trick with "(Intercept) = wi" using (do not ask
 ## why it is like this: read the code instead. If someone wants to fix
 ## it, please do!)
 wi = runif(m)
-lc.most = inla.make.lincombs( c( inla.uncbind(A), list( "(Intercept)" = wi)) )
+lc.most = inla.make.lincombs(a = A[, "a"],  b = A[, "b"], "(Intercept)" = wi)
 
 
 ## terms like 'idx' above, can be added as idx = IDX into
