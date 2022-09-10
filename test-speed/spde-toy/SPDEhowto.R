@@ -14,7 +14,7 @@ lcall <- inla.getOption('inla.call')
 
 
 ## ----locations,tidy=FALSE-----------------------------------------------------
-n <- 200; coo <- matrix(runif(2*n), n) 
+n <- 2000; coo <- matrix(runif(2*n), n) 
 s2u <- .5; k <- 10; r <- 2/k ## RF params.
 R <- s2u*exp(-k*as.matrix(stats::dist(coo))) 
 
@@ -60,7 +60,7 @@ pcprec <- list(hyper=list(theta=list(
   prior='pc.prec',param=c(1,.1))))
 mf <- y ~ 0 + b0 + x + f(idx.u, model=spde) 
 
-res.orig <- inla(mf, control.family=pcprec,
+res.orig <- inla(mf, control.family=pcprec, family = "t", 
  data=inla.stack.data(stk.e), ## data 
  control.compute=list(return.marginals.predictor=TRUE),
  inla.call = "inla.mkl", verbose = T, keep = T, 
@@ -68,11 +68,12 @@ res.orig <- inla(mf, control.family=pcprec,
   A=inla.stack.A(stk.e)))# full projector
 
 res.new <- inla(mf, control.family=pcprec,
- data=inla.stack.data(stk.e), ## data 
- control.compute=list(return.marginals.predictor=TRUE),
- inla.call = "inla.mkl.work", verbose = T, 
- control.predictor=list(compute=TRUE, 
-  A=inla.stack.A(stk.e)))# full projector
+                family = "sn", 
+                data=inla.stack.data(stk.e), ## data 
+                control.compute=list(return.marginals.predictor=TRUE),
+                inla.call = "inla.mkl.work", verbose = T, 
+                control.predictor=list(compute=TRUE, 
+                                       A=inla.stack.A(stk.e)))# full projector
 
 err.pred.mean <- mean(abs(res.orig$summary.linear.predictor$mean -
                      res.new$summary.linear.predictor$mean))
