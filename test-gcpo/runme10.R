@@ -23,7 +23,7 @@ res = inla(formula,
            control.family = list(hyper = list(prec = list(initial = log(1/s^2), fixed = TRUE))), 
            data=list(y=y,id=id),
            inla.mode = "experimental",
-           control.compute = list(cpo = T, control.gcpo = list(enable = T,group.size =3,verbose = T),config = T),
+           control.compute = list(cpo = T, control.gcpo = list(enable = T,num.level.sets =3,verbose = T),config = T),
            control.inla = list(int.strategy = "eb"),
            keep = T, 
            verbose = T)

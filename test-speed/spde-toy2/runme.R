@@ -18,3 +18,8 @@ new <- c(fitns0$cpu[2],
 new.mlik <- c(fitns0$mlik, 
               fitns1$mlik, 
               fitns2$mlik)
+
+orig
+new
+new.mlik-orig.mlik
+

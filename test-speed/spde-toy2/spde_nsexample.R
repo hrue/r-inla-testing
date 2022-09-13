@@ -28,7 +28,7 @@ if (first.time) {
 
     mesh <- inla.mesh.2d(
         boundary=boundary,
-        max.edge=c(10, 20),
+        max.edge=c(20, 30),
         cutoff=5,
         offset=100,
         n=20)
