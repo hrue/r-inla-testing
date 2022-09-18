@@ -1,3 +1,6 @@
+inla.setOption(inla.call = "inla.mkl.work")
+inla.setOption(inla.mode = "experimental")
+
 n = 1000
 N = 4*n
 time = 1:n
