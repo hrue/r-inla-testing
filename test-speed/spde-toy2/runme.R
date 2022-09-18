@@ -10,6 +10,7 @@ orig.mlik <- c(fitns0$mlik,
                fitns2$mlik)
 
 inla.setOption(inla.call = 'inla.mkl.work')
+
 first.time <- FALSE
 source("spde_nsexample.R")
 new <- c(fitns0$cpu[2], 

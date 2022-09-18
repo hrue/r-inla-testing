@@ -28,7 +28,7 @@ if (first.time) {
 
     mesh <- inla.mesh.2d(
         boundary=boundary,
-        max.edge=c(20, 30),
+        max.edge=c(15, 25),
         cutoff=5,
         offset=100,
         n=20)
@@ -104,6 +104,7 @@ fitns1 <- inla(
 
 fitns2 <- inla(
     formula=fns2,
+    keep = T, 
     data=inla.stack.data(d.stack), 
     control.predictor=list(
         A=inla.stack.A(d.stack)),
