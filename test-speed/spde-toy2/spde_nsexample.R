@@ -97,14 +97,15 @@ fitns0 <- inla(
 fitns1 <- inla(
     formula=fns1,
     data=inla.stack.data(d.stack), 
+    keep = T, 
     control.predictor=list(
         A=inla.stack.A(d.stack)),
     control.family=list(hyper=list(theta=pprec)),
     control.compute=ctrc)
+stop("XXXXXXXXXXXX")
 
 fitns2 <- inla(
     formula=fns2,
-    keep = T, 
     data=inla.stack.data(d.stack), 
     control.predictor=list(
         A=inla.stack.A(d.stack)),
