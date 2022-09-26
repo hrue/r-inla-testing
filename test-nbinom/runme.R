@@ -1,26 +1,28 @@
-n = 2000
-x = rnorm(n,  sd = 0.2)
-eta = 1 + x
-E = runif(n, min = 0, max=10)
-true.size = 3
 
-mu = E * exp(eta)
-size = true.size
-y = rnbinom(n, size, mu=mu)
-r = inla(y ~ 1 + x, data = data.frame(y, x, E),
-         family = "nbinomial", E=E,
-         control.family = list(
-             hyper = list(
-                 theta = list(param = 7))))
+prob.interval <- function(y.low, y.high, size, mu) {
+
+    s0 <- dnbinom(y.low, size = size, mu = mu)
+    s <- s0
+    p <- size/(size+mu)
+    for(y in (y.low+1):y.high) {
+        s0 <- s0 * (y+size-1) / y * (1-p)
+        s <- s + s0
+    }
+    return (s)
+}
 
 
-mu = E * exp(eta)
-size = E*true.size
-prob = size/(size + mu)
-y = rnbinom(n, size, mu=mu)
-rr = inla(y ~ 1 + x, data = data.frame(y, x, E),
-    family = "nbinomial",
-    control.family = list(variant = 1),
-    E=E)
+mu <- runif(1)
+size <- rpois(1, 2)
+prob <- size/(size + mu)
 
+y.low <- 4
+y.high <- 6
 
+##print(cbind(y.low:y.high, dnbinom(y.low:y.high, size = size, mu = mu)))
+
+print(c(sum(dnbinom(y.low:y.high, size = size, mu = mu)),
+        (pnbinom(y.high, size = size, mu = mu) - pnbinom(y.low-1, size = size, mu = mu)),
+        prob.interval(y.low, y.high, size, mu)))
+
+        

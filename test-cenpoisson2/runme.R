@@ -13,10 +13,7 @@ E = sample(1:10, n, replace=TRUE)
 lambda = E*exp(eta)
 y = rpois(n, lambda = lambda)
 
-censored = which(y >= low & y <= high)
-y[censored] = low[censored]
-
-r = inla(inla.mdata(cbind(y, low, high))  ~ 1 + x, 
+r = inla(inla.mdata(y, low, high)  ~ 1 + x, 
          family = "cenpoisson2",
          data = data.frame(y, low, high, x), 
          E=E,
