@@ -11,11 +11,12 @@ library(INLA)
 library(PermAlgo)
 library(mvtnorm)
 inla.setOption(inla.mode="experimental")
-##inla.setOption(inla.call="inla.mkl.work")
-inla.setOption(inla.call="remote")
-inla.setOption(num.threads = "15:1")
+inla.setOption(inla.call="inla.mkl.work")
+##inla.setOption(inla.call="remote")
+inla.setOption(num.threads = "4:1")
 set.seed(1) # seed for data generation
 nmod <- 300 # number of models simulated
+nmod <- 1 # number of models simulated
 Startmod <- 0 # to start at a specific model
 ####
 # 1 # data simulation
@@ -604,27 +605,4 @@ m=rowMeans(matrix(unlist(lapply(res_list_INLA, function(x) x[,"INLA"])), ncol=nm
 ss=sqrt(rowMeans(matrix(unlist(lapply(res_list_INLA, function(x) (x[,"INLA_sd"])^2)), ncol=nmod)))
 tru <- res_list_INLA[[1]][,1]
 print(round(dig = 4, cbind(tru, m, ss, z.score = (tru-m)/ss/sqrt(nmod))))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
