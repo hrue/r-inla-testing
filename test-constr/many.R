@@ -1,5 +1,5 @@
 n <- 1000
-nc <- 400
+nc <- 800
 while(TRUE) {
     A <- rnorm(nc * n) * rbinom(n * nc, prob = 0.1, size = 1)
     A <- matrix(A, nc, n)
