@@ -1,9 +1,11 @@
-n = 1000
-x <- rnorm(n)
-eta = 2 + x
-if (!exists("y"))
+n = 25
+if (!exists("y")) {
+    x <- rnorm(n, sd = 0.3)
+    eta = 2 + x
     y = rpois(n, exp(eta))
+}
 
+inla.setOption(inla.call = "inla.mkl.work")
 
 r = inla(y ~ 1 + x, 
          family = "poisson", 
@@ -12,7 +14,6 @@ r = inla(y ~ 1 + x,
          control.predictor = list(hyper = list(prec = list(initial = 25))), 
          control.compute = list(dic = TRUE, po = TRUE), 
          control.inla = list(strategy = "gaussian"), 
-         inla.call = "inla.mkl.work", 
          inla.mode = "classic",
          verbose = T)
 
@@ -20,9 +21,8 @@ rr = inla(y ~ 1 + x,
          family = "poisson", 
          control.fixed = list(mean.intercept = log(mean(y)), prec.intercept = 0.001), 
          data = data.frame(y, x), 
-         control.compute = list(dic = TRUE, po = TRUE, waic = TRUE), 
+         control.compute = list(dic = TRUE, po = TRUE), 
          control.inla = list(strategy = "gaussian"), 
-         inla.call = "inla.mkl.work", 
          inla.mode = "experimental",
          verbose = T)
 
