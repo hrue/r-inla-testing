@@ -32,7 +32,7 @@ if (!exists("pm10.path")) { pm10.path = "Covariates/" }
 library(INLA)
 inla.setOption(inla.mode = "experimental")
 inla.setOption(num.threads = "4:1")
-#inla.setOption(inla.call = "inla.mkl.work")
+inla.setOption(inla.call = "inla.mkl.work")
 
 library(fields)
 library(abind)
