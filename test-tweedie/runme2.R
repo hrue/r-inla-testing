@@ -22,7 +22,8 @@ run <- function() {
                                fixed = FALSE))), 
               control.fixed = list(prec.intercept = 1, prec = 1), 
               control.inla = list(cmin = 0), 
-              ##control.compute = list(cpo = TRUE), 
+              control.compute = list(cpo = TRUE), 
+              inla.call = "inla.mkl.work", 
               verbose = T)
     summary(r)
     return(r)
