@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+set -vx
+
+g++ -c -Wall -fopenmp -I/usr/include/eigen3 -g -fpic  eig.cpp
+gcc -c -Wall -fopenmp -fpic cgeneric-demo.c
+g++ -shared -fopenmp -o cgeneric-demo.so cgeneric-demo.o eig.o 
+
