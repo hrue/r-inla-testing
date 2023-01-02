@@ -1,24 +1,39 @@
 set.seed(1234)
-n <- 100
+n <- 20
 x <- rnorm(n, sd = 1)
 eta <-  1 + x
-s <- 1
-y <- eta + rnorm(n, sd = s)
+y <- rpois(n, exp(eta))
 
 y[n %/% 2] <- NA
-inla.setOption(inla.call = "inla.mkl.work")
 r <- inla(y  ~ 1 + x,
           data = data.frame(y, x),
-          control.compute = list(config = TRUE),
-          verbose = T, 
-          control.family = list(
-              hyper = list(prec = list(initial = log(1/s^2),
-                                       fixed = TRUE))))
+          family = "poisson", 
+          control.compute = list(config = TRUE))
+ll <- r$misc$configs$config[[1]]$ll.info
 
-rr <- inla(y  ~ 1 + x,
-          data = data.frame(y, x),
-          control.compute = list(config = TRUE),
-          control.inla = list(cmin = 0), 
-          family = "t")
+gr <- function(x, y) {
+    h <- 1e-5
+    (dpois(y, exp(x +h), log = TRUE) -
+     dpois(y, exp(x -h), log = TRUE)) / 2 / h
+}
 
-           
+g <- numeric(n)
+for(i in 1:n)
+    g[i] <- gr(r$mode$x[i], y[i])
+
+ggr <- function(x, y) {
+    h <- 1e-5
+    (dpois(y, exp(x +h), log = TRUE) -
+     2 * dpois(y, exp(x), log = TRUE) +
+     dpois(y, exp(x -h), log = TRUE)) / h^2
+}
+
+gg <- numeric(n)
+for(i in 1:n)
+    gg[i] <- ggr(r$mode$x[i], y[i])
+
+head(
+    round(dig = 6,
+          cbind(est.grad = g, grad = ll[, 1], err.grad = abs(g-ll[, 1]), 
+                est.hess = gg, hess = ll[, 2], err.hess = abs(gg-ll[, 2]))))
+
