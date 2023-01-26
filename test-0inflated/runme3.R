@@ -1,8 +1,6 @@
-INLA:::inla.my.update()
 inla.setOption(verbose = TRUE,
                keep = FALSE,
                safe = TRUE,
-               inla.call = "inla.mkl.work",
                num.threads = "4:1")
  
 sim.binomial <- function(prob, p, size) 

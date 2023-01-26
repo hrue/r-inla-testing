@@ -1,4 +1,4 @@
-n <- 100
+n <- 10
 y <- rnorm(n)
 
 r <- inla(

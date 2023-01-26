@@ -5,21 +5,12 @@ Leuk <- inla.rbind.data.frames(Leuk, Leuk)
 
 Leuk$time <- Leuk$time / max(Leuk$time)
 formula = inla.surv(time, cens) ~ sex + age +
-    f(inla.group(wbc), model="rw2")+
-    f(inla.group(tpi), model="rw2")+
-    f(district,model="besag",graph = g)
+    f(inla.group(wbc), model="rw2", scale.model = TRUE)+
+    f(inla.group(tpi), model="rw2", scale.model = TRUE)+
+    f(district,model="besag",graph = g, scale.model = TRUE)
 
-inla.setOption(scale.model = TRUE)
-inla.setOption(num.threads = "4:1")
-##inla.setOption(inla.call = "remote")
-inla.setOption(inla.call = "inla.mkl.work")
-##inla.setOption(inla.call = NULL)
-
-##Sys.setenv(INLA_TRACE = 'Qx2')
-##Sys.unsetenv('INLA_TRACE')
-
+##Sys.setenv(INLA_TRACE = '*')
 
 r = inla(formula, family="coxph", data=Leuk, keep = T, safe = F, 
-          control.hazard = list(n.intervals = 50),
-         inla.call = "", 
-          inla.mode = "experimental", verbose = T, num.threads = "1:1")
+         control.hazard = list(n.intervals = 50),
+         verbose = F)
