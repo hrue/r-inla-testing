@@ -10,7 +10,7 @@ inla.setOption(safe = FALSE)
 ## inla.setOption(inla.call = "inla.mkl.work")
 
 idx = 1:n
-formula = y ~ 1 + f(idx,  model="ar1")
+formula = y ~ 1 + f(idx,  model="ar1", fixed = c(TRUE, TRUE))
 
 ## optimize as usual
 r = inla(formula, data = data.frame(y, idx),
