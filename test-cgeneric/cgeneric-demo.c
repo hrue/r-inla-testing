@@ -1,7 +1,7 @@
 
 /* cgeneric-demo.c
  * 
- * Copyright (C) 2021-2022 Havard Rue
+ * Copyright (C) 2021-2023 Havard Rue
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,17 +30,16 @@
 
 
 #include <assert.h>
-#if !defined(__FreeBSD__)
-#include <malloc.h>
-#endif
 #include <math.h>
 #include <stdlib.h>
 #include <strings.h>
+#include <stdio.h>
 
 #include "cgeneric.h"
 
 #define Calloc(n_, type_)  (type_ *)calloc((n_), sizeof(type_))
 #define SQR(x) ((x)*(x))
+#define P(x)        if (1) { printf("[%s:%1d] " #x " = [ %.12f ]\n",__FILE__, __LINE__,(double)(x)); }
 
 double *inla_cgeneric_iid_model(inla_cgeneric_cmd_tp cmd, double *theta, inla_cgeneric_data_tp * data)
 {
@@ -52,12 +51,31 @@ double *inla_cgeneric_iid_model(inla_cgeneric_cmd_tp cmd, double *theta, inla_cg
 	int N = data->ints[0]->ints[0];			       // this will always be the case
 	assert(N > 0);
 
+	if (0) {
+		printf("\n%s\n", data->ints[2]->name);
+		P(data->ints[2]->ints[0]);
+		P(data->ints[2]->ints[1]);
+		P(data->ints[2]->ints[2]);
+		printf("\n%s\n", data->ints[3]->name);
+		P(data->ints[3]->ints[0]);
+		P(data->ints[3]->ints[1]);
+		P(data->ints[3]->ints[2]);
+		printf("\n%s\n", data->doubles[0]->name);
+		P(data->doubles[0]->doubles[0]);
+		P(data->doubles[0]->doubles[1]);
+		P(data->doubles[0]->doubles[2]);
+		printf("\n%s\n", data->doubles[1]->name);
+		P(data->doubles[1]->doubles[0]);
+		P(data->doubles[1]->doubles[1]);
+		P(data->doubles[1]->doubles[2]);
+	}
+
 	switch (cmd) {
 	case INLA_CGENERIC_VOID:
 	{
 		assert(!(cmd == INLA_CGENERIC_VOID));
-		break;
 	}
+		break;
 
 	case INLA_CGENERIC_GRAPH:
 	{
@@ -66,68 +84,74 @@ double *inla_cgeneric_iid_model(inla_cgeneric_cmd_tp cmd, double *theta, inla_cg
 		// where ii<=jj, ii is non-decreasing and jj is non-decreasing for the same ii
 		// so like the loop
 		// for i=0, ...
-		//     for j=i, ...
-		//         G_ij = 
+		// for j=i, ...
+		// G_ij = 
 		// and M is the total length while N is the dimension
 
 		int M = N;
 		ret = Calloc(2 + 2 * N, double);
+		assert(ret);
 		ret[0] = N;				       /* dimension */
 		ret[1] = M;				       /* number of (i <= j) */
 		for (int i = 0; i < M; i++) {
 			ret[2 + i] = i;			       /* i */
 			ret[2 + N + i] = i;		       /* j */
 		}
-		break;
 	}
+		break;
 
 	case INLA_CGENERIC_Q:
 	{
 		// return c(-1, M, Qij) in the same order as defined in INLA_CGENERIC_GRAPH
 		int M = N;
 		ret = Calloc(2 + N, double);
-		ret[0] = -1;			       /* REQUIRED! */
-		ret[1] = M;			       /* number of (i <= j) */
+		assert(ret);
+		ret[0] = -1;				       /* REQUIRED! */
+		ret[1] = M;				       /* number of (i <= j) */
 		for (int i = 0; i < M; i++) {
 			ret[2 + i] = prec;
 		}
-		break;
 	}
+		break;
 
 	case INLA_CGENERIC_MU:
 	{
 		// return (N, mu)
 		// if N==0 then mu is not needed as its taken to be mu[]==0
 		ret = Calloc(1, double);
+		assert(ret);
 		ret[0] = 0;
-		break;
 	}
+		break;
 
 	case INLA_CGENERIC_INITIAL:
 	{
 		// return c(M, initials)
 		// where M is the number of hyperparameters
 		ret = Calloc(2, double);
+		assert(ret);
 		ret[0] = 1;
 		ret[1] = 4.0;
-		break;
 	}
+		break;
 
 	case INLA_CGENERIC_LOG_NORM_CONST:
 	{
 		// return c(NORM_CONST) or a NULL-pointer if INLA should compute it by itself
 		ret = Calloc(1, double);
+		assert(ret);
 		ret[0] = N * (-0.9189385332 + 0.5 * lprec);
-		break;
 	}
+		break;
 
 	case INLA_CGENERIC_LOG_PRIOR:
 	{
 		// return c(LOG_PRIOR)
 		ret = Calloc(1, double);
+		assert(ret);
 		ret[0] = -prec + lprec;			       // prec ~ gamma(1,1)
-		break;
 	}
+		break;
 
 	case INLA_CGENERIC_QUIT:
 	default:
@@ -160,8 +184,8 @@ double *inla_cgeneric_ar1_model(inla_cgeneric_cmd_tp cmd, double *theta, inla_cg
 	case INLA_CGENERIC_VOID:
 	{
 		assert(!(cmd == INLA_CGENERIC_VOID));
-		break;
 	}
+		break;
 
 	case INLA_CGENERIC_GRAPH:
 	{
@@ -170,13 +194,13 @@ double *inla_cgeneric_ar1_model(inla_cgeneric_cmd_tp cmd, double *theta, inla_cg
 		// where ii<=jj, ii is non-decreasing and jj is non-decreasing for the same ii
 		// so like the loop
 		// for i=0, ...
-		//     for j=i, ...
-		//         G_ij = 
+		// for j=i, ...
+		// G_ij = 
 		// and M is the length of ii
 
 		int M = N + N - 1, offset, i, k;
 		ret = Calloc(2 + 2 * M, double);
-
+		assert(ret);
 		offset = 2;
 		ret[0] = N;				       /* dimension */
 		ret[1] = M;				       /* number of (i <= j) */
@@ -188,8 +212,8 @@ double *inla_cgeneric_ar1_model(inla_cgeneric_cmd_tp cmd, double *theta, inla_cg
 				ret[offset + M + k++] = i + 1; /* j */
 			}
 		}
-		break;
 	}
+		break;
 
 	case INLA_CGENERIC_Q:
 	{
@@ -201,7 +225,7 @@ double *inla_cgeneric_ar1_model(inla_cgeneric_cmd_tp cmd, double *theta, inla_cg
 		int M = N + N - 1;
 		int offset, i, k;
 		ret = Calloc(2 + M, double);
-
+		assert(ret);
 		offset = 2;
 		ret[0] = -1;				       /* REQUIRED */
 		ret[1] = M;
@@ -211,8 +235,8 @@ double *inla_cgeneric_ar1_model(inla_cgeneric_cmd_tp cmd, double *theta, inla_cg
 				ret[offset + k++] = -param * rho;
 			}
 		}
-		break;
 	}
+		break;
 
 	case INLA_CGENERIC_MU:
 	{
@@ -220,9 +244,10 @@ double *inla_cgeneric_ar1_model(inla_cgeneric_cmd_tp cmd, double *theta, inla_cg
 		// if N==0 then mu is not needed as its taken to be mu[]==0
 
 		ret = Calloc(1, double);
+		assert(ret);
 		ret[0] = 0;
-		break;
 	}
+		break;
 
 	case INLA_CGENERIC_INITIAL:
 	{
@@ -230,11 +255,12 @@ double *inla_cgeneric_ar1_model(inla_cgeneric_cmd_tp cmd, double *theta, inla_cg
 		// where M is the number of hyperparameters
 
 		ret = Calloc(3, double);
+		assert(ret);
 		ret[0] = 2;
 		ret[1] = 1.0;
 		ret[2] = 1.0;
-		break;
 	}
+		break;
 
 	case INLA_CGENERIC_LOG_NORM_CONST:
 	{
@@ -242,18 +268,20 @@ double *inla_cgeneric_ar1_model(inla_cgeneric_cmd_tp cmd, double *theta, inla_cg
 
 		double prec_innovation = prec / (1.0 - SQR(rho));
 		ret = Calloc(1, double);
+		assert(ret);
 		ret[0] = N * (-0.5 * log(2.0 * M_PI) + 0.5 * log(prec_innovation)) + 0.5 * log(1.0 - SQR(rho));
-		break;
 	}
+		break;
 
 	case INLA_CGENERIC_LOG_PRIOR:
 	{
 		// return c(LOG_PRIOR)
 
 		ret = Calloc(1, double);
+		assert(ret);
 		ret[0] = -prec + lprec - 0.5 * log(2.0 * M_PI) - 0.5 * SQR(rho_intern);
-		break;
 	}
+		break;
 
 	case INLA_CGENERIC_QUIT:
 	default:
@@ -279,7 +307,7 @@ double *inla_cgeneric_generic0_model(inla_cgeneric_cmd_tp cmd, double *theta, in
 	int N = data->ints[0]->ints[0];			       // this will always be the case
 	assert(N > 0);
 
-	/* 
+	/*
 	 * we assume Cmatrix is stored column-wise, like
 	 * for(i...)
 	 *     for(j=i...)
@@ -297,8 +325,8 @@ double *inla_cgeneric_generic0_model(inla_cgeneric_cmd_tp cmd, double *theta, in
 	case INLA_CGENERIC_VOID:
 	{
 		assert(!(cmd == INLA_CGENERIC_VOID));
-		break;
 	}
+		break;
 
 	case INLA_CGENERIC_GRAPH:
 	{
@@ -307,21 +335,22 @@ double *inla_cgeneric_generic0_model(inla_cgeneric_cmd_tp cmd, double *theta, in
 		// where ii<=jj, ii is non-decreasing and jj is non-decreasing for the same ii
 		// so like the loop
 		// for i=0, ...
-		//     for j=i, ...
-		//         G_ij = 
+		// for j=i, ...
+		// G_ij = 
 		// and M is the length of ii
 
 		int M = Cmatrix->n, offset;
 		ret = Calloc(2 + 2 * M, double);
+		assert(ret);
 		offset = 2;
 		ret[0] = N;				       /* dimension */
 		ret[1] = M;				       /* number of (i <= j) */
-		for (int k= 0; k < M; k++) {
+		for (int k = 0; k < M; k++) {
 			ret[offset + k] = Cmatrix->i[k];       /* i */
 			ret[offset + M + k] = Cmatrix->j[k];   /* j */
 		}
-		break;
 	}
+		break;
 
 	case INLA_CGENERIC_Q:
 	{
@@ -330,17 +359,17 @@ double *inla_cgeneric_generic0_model(inla_cgeneric_cmd_tp cmd, double *theta, in
 		// where M is the length of Qij
 
 		int M = Cmatrix->n;
-		int offset; 
+		int offset;
 		ret = Calloc(2 + M, double);
-
+		assert(ret);
 		offset = 2;
 		ret[0] = -1;				       /* REQUIRED */
 		ret[1] = M;
 		for (int k = 0; k < M; k++) {
 			ret[offset + k] = prec * Cmatrix->x[k];
 		}
-		break;
 	}
+		break;
 
 	case INLA_CGENERIC_MU:
 	{
@@ -348,9 +377,10 @@ double *inla_cgeneric_generic0_model(inla_cgeneric_cmd_tp cmd, double *theta, in
 		// if N==0 then mu is not needed as its taken to be mu[]==0
 
 		ret = Calloc(1, double);
+		assert(ret);
 		ret[0] = 0;
-		break;
 	}
+		break;
 
 	case INLA_CGENERIC_INITIAL:
 	{
@@ -358,27 +388,30 @@ double *inla_cgeneric_generic0_model(inla_cgeneric_cmd_tp cmd, double *theta, in
 		// where M is the number of hyperparameters
 
 		ret = Calloc(2, double);
+		assert(ret);
 		ret[0] = 1;
 		ret[1] = 4.0;
-		break;
 	}
+		break;
 
 	case INLA_CGENERIC_LOG_NORM_CONST:
 	{
-		// return c(NORM_CONST) or a NULL-pointer if INLA should compute it by itself
+		// return c(NORM_CONST) or a NULL-pointer if INLA should compute it by itself. here we ignore the part that comes from the
+		// 1/2*log(det(Q)), which could be added if needed later. this is how the 'generic0' model is implemented.
 		ret = Calloc(1, double);
+		assert(ret);
 		ret[0] = N / 2.0 * (lprec - log(2.0 * M_PI));
-		break;
 	}
+		break;
 
 	case INLA_CGENERIC_LOG_PRIOR:
 	{
 		// return c(LOG_PRIOR). with a Gamma(1,1) for precision, this is the log prior for the log(precision).
-
 		ret = Calloc(1, double);
-		ret[0] = -prec + lprec; 
-		break;
+		assert(ret);
+		ret[0] = -prec + lprec;
 	}
+		break;
 
 	case INLA_CGENERIC_QUIT:
 	default:
