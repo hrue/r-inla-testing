@@ -28,7 +28,7 @@ for(variant in 0:1) {
 
     formula = Y ~ -1 + intercept + x1 + x2
     r=inla(formula,
-           family =c("weibullsurv", "weibullsurv"), 
+           family =c("weibull.surv", "weibull.surv"), 
            data=data,
            control.family = list(list(variant = variant), list(variant = variant)))
     print(summary(r))

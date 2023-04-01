@@ -9,9 +9,9 @@ Q.rw1 = INLA:::inla.rw(time.dim, order=1, scale.model=TRUE, sparse=TRUE)
 ## a) Ohio reduced graph with 10 regions
 ## graph = "ohioReduced.txt"
 ## b) Ohio complete graph with 88 regions
-graph = "ohioFull.txt"
+##graph = "ohioFull.txt"
 ## c) Germany graph with 544 regions
-##graph = "germany.txt"
+graph = "germany.txt"
 
 g = inla.read.graph(graph)
 Q.space = INLA:::inla.pc.bym.Q(g)
