@@ -175,7 +175,8 @@ mod <- inla(formula,
             inla.mode = "experimental", 
             inla.call = "remote", 
             num.threads = "24:1",
-            verbose = TRUE)
+            verbose = TRUE,
+            keep = TRUE)
             
 print(Sys.time()-ptm)
 
