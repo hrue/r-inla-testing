@@ -1,24 +1,23 @@
-n <- 100000
+n <- 40000
 x <- rnorm(n, sd = 1)
 off <- rnorm(n, sd = 0.001)
 off[] <- 0
-eta <- 1 + x + off
-p <- 1.0/(1+exp(-eta))
-y <- rbinom(n, prob = p, size = 1)
+eta <- 0 + 0.3 * x + off
+lam <- exp(eta)
+y <- rpois(n, lambda = lam)
 
 inla.setOption(num.threads = "1:1",
                safe = FALSE,
+               keep = F, 
                verbose = !TRUE)
 
 r <- inla(y ~ 1 + x + offset(off),
-          family = "binomial",
-          ##control.family = list(control.link = list(model = "probit")), 
+          family = "poisson",
           control.compute = list(cpo = T), 
           data = data.frame(y, x, off))
 rr <- inla(y ~ 1 + x + offset(off),
-           family = "binomial",
+           family = "poisson",
            control.compute = list(cpo = T), 
-           ##control.family = list(control.link = list(model = "probit")), 
            data = data.frame(y, x, off),
            inla.call = "inla.mkl.work")
 
