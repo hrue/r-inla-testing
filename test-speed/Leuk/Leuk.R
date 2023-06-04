@@ -2,6 +2,9 @@ data(Leuk)
 g = system.file("demodata/Leuk.graph", package="INLA")
 
 Leuk <- inla.rbind.data.frames(Leuk, Leuk)
+Leuk <- inla.rbind.data.frames(Leuk, Leuk)
+Leuk <- inla.rbind.data.frames(Leuk, Leuk)
+Leuk <- inla.rbind.data.frames(Leuk, Leuk)
 
 Leuk$time <- Leuk$time / max(Leuk$time)
 formula = inla.surv(time, cens) ~ sex + age +
