@@ -3,10 +3,12 @@ library(bigDM)
 library(sf)
 temp <- tempfile()
 filename <- paste(temp,"zip",sep=".")
-download.file("https://emi-sstcdapp.unavarra.es/bigDM/inst/shape/Carto_SpainMUN.zip","Carto_SpainMUN.zip")
+if (!file.exists("Carto_SpainMUN.zip")) {
+    download.file("https://emi-sstcdapp.unavarra.es/bigDM/inst/shape/Carto_SpainMUN.zip","Carto_SpainMUN.zip")
+}
 unzip("Carto_SpainMUN.zip",exdir=temp)
-
 carto_sf <- st_read(temp)
+unlink(temp, recursive = TRUE)
 url <- "https://emi-sstcdapp.unavarra.es/bigDM/inst/csv/data.csv"
 data <- read.csv(url)
 
