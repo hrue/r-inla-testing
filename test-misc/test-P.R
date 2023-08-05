@@ -2,9 +2,10 @@ INLA:::inla.my.update(b = TRUE)
 y <- -4:5
 inla.setOption(num.threads = 1)
 r <- inla(y ~ 1 + offset(y),
+          family = "normal", 
           data = data.frame(y), 
-          control.family = list(hyper = list(prec = list(initial = 2*log(1/length(y)),
-                                                         fixed = TRUE))),
+          control.family = list(hyper = list(prec = list(initial = log(1/length(y)),
+                                                         fixed = !TRUE))),
           control.compute = list(return.marginals.predictor = TRUE), 
           control.predictor = list(cdf = 0), 
           verbose = TRUE)
