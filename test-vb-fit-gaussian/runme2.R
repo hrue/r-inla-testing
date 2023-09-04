@@ -5,12 +5,12 @@ mod$link$sslogit$status <- NULL
 assign("inla.models", mod, env = INLA:::inla.get.inlaEnv())
 rm(mod)
 
-n = 300
-size = 1
-x = rnorm(n, s=0.5)
-eta = 1 + x
-sens = 0.85
-spec = 0.95
+n = 50
+size = 5
+x = rnorm(n, s=1)
+eta = 2 + x
+sens = 0.7
+spec = 0.9
 p = 1/(1+exp(-eta))
 prob = sens * p + (1-spec)*(1 - p)
 y = rbinom(n, size=size,  prob=prob)
@@ -23,7 +23,7 @@ r = inla(y ~ 1 + x, data = data.frame(y, x, size),
         Ntrials = size,
         verbose = TRUE,
         control.fixed = list(prec.intercept = 1, prec = 1), 
-        control.inla = list(cmin = 0, b.strategy = "keep",
+        control.inla = list(b.strategy = "keep", cmin = 0, 
                             control.vb = list(enable = FALSE)), 
         control.family = list(
                 control.link = list(
@@ -40,15 +40,35 @@ r = inla(y ~ 1 + x, data = data.frame(y, x, size),
                                         fixed = TRUE, 
                                         param = c(a, b(spec, a)))))))
 
-Sys.setenv(INLA_VB_FIT = 1)
-Sys.unsetenv("INLA_VB_FIT")
+r.vb = inla(y ~ 1 + x, data = data.frame(y, x, size),
+        family = "binomial",
+        Ntrials = size,
+        verbose = TRUE,
+        control.fixed = list(prec.intercept = 1, prec = 1), 
+        control.inla = list(b.strategy = "keep", cmin = 0, 
+                            control.vb = list(enable = TRUE, strategy = "variance")), 
+        control.family = list(
+                control.link = list(
+                        model = "sslogit",
+                        hyper = list(
+                                sens = list(
+                                        prior = "logitbeta",
+                                        initial = inla.link.logit(sens),
+                                        fixed = TRUE, 
+                                        param = c(a, b(sens, a))),
+                                spec = list(
+                                        prior = "logitbeta",
+                                        initial = inla.link.logit(spec),
+                                        fixed = TRUE, 
+                                        param = c(a, b(spec, a)))))))
 
 rr = inla(y ~ 1 + x, data = data.frame(y, x, size),
         family = "binomial",
         Ntrials = size,
         verbose = TRUE,
         control.fixed = list(prec.intercept = 1, prec = 1), 
-        control.inla = list(b.strategy = "keep", control.vb = list(enable = FALSE)), 
+        control.inla = list(b.strategy = "keep", cmin = Inf,
+                            control.vb = list(enable = FALSE)), 
         control.family = list(
                 control.link = list(
                         model = "sslogit",
@@ -66,7 +86,33 @@ rr = inla(y ~ 1 + x, data = data.frame(y, x, size),
         inla.call = "inla.mkl.work",
         num.threads = "1:1", safe = FALSE)
         
-model <- "
+rr.vb = inla(y ~ 1 + x, data = data.frame(y, x, size),
+        family = "binomial",
+        Ntrials = size,
+        verbose = TRUE,
+        control.fixed = list(prec.intercept = 1, prec = 1), 
+        control.inla = list(b.strategy = "keep", cmin = Inf,
+                            control.vb = list(enable = TRUE, strategy = "variance")), 
+        control.family = list(
+                control.link = list(
+                        model = "sslogit",
+                        hyper = list(
+                                sens = list(
+                                        prior = "logitbeta",
+                                        initial = inla.link.logit(sens),
+                                        fixed = TRUE, 
+                                        param = c(a, b(sens, a))),
+                                spec = list(
+                                        prior = "logitbeta",
+                                        initial = inla.link.logit(spec),
+                                        fixed = TRUE, 
+                                        param = c(a, b(spec, a)))))),
+        inla.call = "inla.mkl.work",
+        num.threads = "1:1", safe = FALSE)
+
+if (!FALSE) {
+    
+    model <- "
     model {
         for(i in 1:N) {
             eta[i] <- beta0 + beta1 * x[i];
@@ -77,20 +123,25 @@ model <- "
         beta0 ~ dnorm(0, 1)
         beta1 ~ dnorm(0, 1)
     }"
-r.mcmc <- combine.mcmc(run.jags(model = model, data = list(y = y, x = x, N = n, Ntrials = size, 
-                                                           sens = sens, spec = spec),
-                                monitor = c("beta0", "beta1"), sample = 10^5, 
-                                n.chains = 4, method = "parallel"))
-summary(r)
-summary(rr)
-summary(r.mcmc)
+    r.mcmc <- combine.mcmc(run.jags(model = model, data = list(y = y, x = x, N = n, Ntrials = size, 
+                                                               sens = sens, spec = spec),
+                                    monitor = c("beta0", "beta1"), sample = 10^4, thin = 10, 
+                                    n.chains = 4, method = "parallel"))
+    s.r <- r$summary.fixed[, c("mean", "sd")]
+    s.r.vb <- r.vb$summary.fixed[, c("mean", "sd")]
+    s.rr <- rr$summary.fixed[, c("mean", "sd")]
+    s.rr.vb <- rr.vb$summary.fixed[, c("mean", "sd")]
+    s.mcmc <- summary(r.mcmc)
 
-r$.args$control.inla$control.vb$enable <- TRUE
-r$.args$verbose <- FALSE
-r <- inla.rerun(r)
-summary(r)
+    for(i in 1:2) {
+        if (i == 1) cat("Intercept\n") else cat("beta\n")
+        m = s.mcmc$statistics[i, c("Mean",  "SD")][1]
+        s = s.mcmc$statistics[i, c("Mean",  "SD")][2]
+        print(rbind(r = c(s.r[i, ], err = (s.r[i, 1]-m)/s), 
+                    r.vb = c(s.r.vb[i, ], (s.r.vb[i,1]-m)/s), 
+                    rr = c(s.rr[i, ], (s.rr[i, 1]-m)/s), 
+                    rr.vb = c(s.rr.vb[i, ], (s.rr.vb[i, 1]-m)/s), 
+                    mcmc = c(s.mcmc$statistics[i, c("Mean",  "SD")], 0)))
+    }
 
-rr$.args$control.inla$control.vb$enable <- TRUE
-rr$.args$verbose <- FALSE
-rr <- inla.rerun(rr)
-summary(rr)
+}
