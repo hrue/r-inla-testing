@@ -58,19 +58,21 @@ n = 300
 
 ## model for the location/quantile
 eta.x = rnorm(n)
+eta.xx = rnorm(n)
 ##eta.x[] <- 0
-eta = 1 + 0.4 * eta.x
+eta = 1 + 0.4 * eta.x + 0.2 * eta.xx
 
 ## model for log(spread)
 spread.x = rnorm(n)
+spread.xx = rnorm(n)
 spread.true = 1.0
-spread = spread.true * exp(0.3 * spread.x)
+spread = spread.true * exp(0.3 * spread.x + 0.1 * spread.xx)
 
 ## model for the (internal) tail parameter
 tail.interval = c(0, 0.5)
 tail.x = rnorm(n)
 tail.x[] = 0
-tail.true = 0.1
+tail.true = 0.4
 tail.true.intern = map.tail(tail.true, tail.interval, inverse=TRUE)
 tail = map.tail(tail.true.intern + 0.1 * tail.x, interval = tail.interval)
 tail.lambda = 7 ## pc-prior
@@ -94,13 +96,12 @@ if (all(spread.x == 0)) spread.x = null.matrix
 if (all(tail.x == 0)) tail.x = null.matrix
 
 r = inla(
-    inla.mdata(y, spread.x, tail.x) ~ 1, 
+    inla.mdata(y, cbind(spread.x, spread.xx), tail.x) ~ 1 + eta.x + eta.xx, 
     family = "bgev",
-    data = data.frame(y, eta.x, spread.x, tail.x),
-    control.compute = list(cpo = TRUE), 
+    data = data.frame(y, eta.x, eta.xx, spread.x, spread.xx, tail.x),
     control.predictor = list(compute = TRUE), 
     control.family = list(
-        dummy = 0,  ## I need to fix why I need to do this...
+##        dummy = 0,  ## I need to fix why I need to do this...
         control.bgev = list(q.location = p.alpha,
                             q.spread = p.beta,
                             ## quantile levels for the mixing part
@@ -111,7 +112,7 @@ r = inla(
         hyper = list(spread = list(initial = log(spread.true),
                                    fixed=FALSE,
                                    prior = "loggamma",
-                                   param = c(1, 0.00000001)), 
+                                   param = c(1, 0.1)), 
                      tail = list(initial = if (tail.true == 0.0) -Inf else tail.true.intern, 
                                  prior = "pc.gevtail",
                                  ## the parameters are (lambda, low, high)
@@ -120,19 +121,24 @@ r = inla(
                      beta1 = list(prior = "normal",
                                   param = c(0, 300),
                                   initial = 0.3,
-                                  fixed = TRUE))), 
-    control.inla = list(int.strategy = "eb", cmin = 0), 
+                                  fixed = !TRUE))), 
+    control.inla = list(int.strategy = "eb", cmin = 0,
+                        b.strategy = "keep", 
+                        hessian.correct.skewness.only = TRUE, 
+                        control.vb = list(enable = !FALSE, strategy = "variance")), 
     control.fixed = list(prec = 10,  prec.intercept = 0), 
     verbose=FALSE)
+r$.args$control.inla$cmin <- -Inf
+r <- inla.rerun(r)
+
 
 rr = inla(
-    inla.mdata(y, spread.x, tail.x) ~ 1, 
+    inla.mdata(y, cbind(spread.x, spread.xx), tail.x) ~ 1 + eta.x + eta.xx, 
     family = "bgev",
-    data = data.frame(y, eta.x, spread.x, tail.x),
-    control.compute = list(cpo = TRUE), 
+    data = data.frame(y, eta.x, eta.xx, spread.x, spread.xx, tail.x),
     control.predictor = list(compute = TRUE), 
     control.family = list(
-        dummy = 0,  ## I need to fix why I need to do this...
+##        dummy = 0,  ## I need to fix why I need to do this...
         control.bgev = list(q.location = p.alpha,
                             q.spread = p.beta,
                             ## quantile levels for the mixing part
@@ -143,7 +149,7 @@ rr = inla(
         hyper = list(spread = list(initial = log(spread.true),
                                    fixed=FALSE,
                                    prior = "loggamma",
-                                   param = c(1, 0.00000001)), 
+                                   param = c(1, 0.1)), 
                      tail = list(initial = if (tail.true == 0.0) -Inf else tail.true.intern, 
                                  prior = "pc.gevtail",
                                  ## the parameters are (lambda, low, high)
@@ -152,15 +158,15 @@ rr = inla(
                      beta1 = list(prior = "normal",
                                   param = c(0, 300),
                                   initial = 0.3,
-                                  fixed = TRUE))), 
-    control.mode = list(result = r, restart = TRUE), 
-    control.inla = list(int.strategy = "eb", cmin = Inf), 
+                                  fixed = !TRUE))), 
+    control.inla = list(int.strategy = "eb", cmin = Inf,
+                        b.strategy = "keep", 
+                        hessian.correct.skewness.only = TRUE, 
+                        control.vb = list(enable = !FALSE, strategy = "variance")), 
     control.fixed = list(prec = 10,  prec.intercept = 0), 
-    verbose=!FALSE,
-    inla.call = "inla.mkl.work", safe = FALSE)
+    inla.call = "inla.mkl.work", verbose=FALSE)
 
-print(r$summary.hyperpar)
-print(rr$summary.hyperpar)
-
-
-
+r$summary.hyperpar[,c("mean","sd")]
+rr$summary.hyperpar[,c("mean","sd")]
+r$summary.fixed[,c("mean","sd")]
+rr$summary.fixed[,c("mean","sd")]

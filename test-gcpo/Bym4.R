@@ -1,7 +1,6 @@
 library(INLA)
 
 ##INLA:::inla.my.update(b = T)
-inla.setOption(inla.mode = "experimental")
 inla.setOption(scale.model = TRUE)
 inla.setOption(num.threads = "1:1")
 inla.setOption(inla.call = "inla.mkl.work")
@@ -14,40 +13,22 @@ summary(Germany)
 ## just make a duplicated column
 Germany = cbind(Germany,region.struct=Germany$region)
 
-formula3 = Y ~ 1 + f(region.struct,model="besag",graph=g) + f(region,model="iid") + f(x, model="rw2")
+formula3 = Y ~ 1 + f(region.struct,model="besag",graph=g) +
+    f(region,model="iid") + f(x, model="rw2")
 
 r = inla(formula3,
          family="poisson",
          data=Germany, 
          E=E,
          verbose = TRUE,
-         safe = FALSE, 
-         control.fixed = list(prec.intercept = 1), 
-         control.inla = list(int.strategy = "eb"), 
+         ##control.fixed = list(prec.intercept = 1), 
+         control.inla = list(int.strategy = "eb"),
+         ##control.vb = list(enable = FALSE)), 
          control.compute = list(
              cpo = T, 
              control.gcpo = list(
-                 enable = TRUE, 
-                 num.level.sets = 3, 
-                 strategy = "prior",
-                 remove = c("region"), 
-                 verbose = TRUE)))
+               enable = TRUE, 
+               num.level.sets = 2,
+               verbose = !TRUE)))
 
-if (FALSE) {
-    source(system.file("demodata/Bym-map.R", package="INLA"))
 
-    n <- nrow(Germany)
-    m <- 3
-    par(mfrow = c(m, m))
-    for(ii in 240 + 0:8) {
-        i <- ii+1
-        if (ii > 9 && ii %% m^2 == 0) {
-            dev.new()
-            par(mfrow = c(m, m))
-        }
-        x <- rep(1, n)
-        x[r$gcpo$groups[[i]]$idx] <- 0
-        x[i] <- 2
-        Bym.map(x)
-    }
-}
