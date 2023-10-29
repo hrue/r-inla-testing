@@ -1,8 +1,12 @@
-n <- 10
+
+INLA:::inla.my.update()
+inla.setOption(num.threads = "1:1", smtp = "taucs", safe = FALSE)
+
+n <- 15
 x <- rnorm(n)
 xx <- rnorm(n)
 
-eta <- 1 + 0.1 * x + 0.2 * xx
+eta <- -1 + 0.4 * x + 0.6 * xx
 y <- rpois(n, exp(eta))
 
 r <- inla(y ~ 1 + x + xx,
@@ -18,14 +22,14 @@ r.vb <- inla(y ~ 1 + x + xx,
           control.inla = list(control.vb = list(enable = TRUE, strategy = "variance")), 
           verbose = TRUE)
 
-Sys.setenv(INLA_VB_FIT = 1)
+Sys.setenv(INLA_NEW_TEST = 1)
 rr <- inla(y ~ 1 + x + xx,
           data = data.frame(y, x, xx),
           family = "poisson",
           control.fixed = list(prec.intercept = 1, prec = 1), 
           verbose = TRUE,
-          control.inla = list(verbose = TRUE, control.vb = list(enable = FALSE)), 
-          ##control.mode = list(result = r, restart = TRUE),
+          control.inla = list(verbose = TRUE, control.vb = list(enable = !FALSE)), 
+          control.mode = list(result = r, restart = TRUE),
           inla.call = "inla.mkl.work",
           num.threads = "1:1", safe = FALSE)
 
@@ -49,17 +53,3 @@ r.vb$summary.fixed[,c("mean","sd")]
 rr$summary.fixed[,c("mean","sd")]
 cbind(apply(r.mcmc,2,mean), apply(r.mcmc,2,sd))
 
-
-
-
-if (TRUE) {
-    m <- -0.399
-    s <- sqrt(exp(-0.223))
-    xx <- seq(-4, 4, by = 0.01) * s + m
-
-    yy <- dnorm(xx, mean = m, sd = s, log = TRUE)
-    plot(xx, yy - max(yy), ylim = c(-10, 2), type = "l", lwd = 3, col = "blue")
-    yy <- dpois(y[n], exp(xx), log = TRUE)
-    lines(xx, yy - max(yy))
-
-}

@@ -22,5 +22,6 @@ Y = inla.mdata(y, 1, x)
 r = inla(Y ~ 1 + xx,
          data = list(Y=Y, xx=xx), 
          family = "nmix",
+         control.inla = list(cmin = 0), 
          control.fixed = list(prec.intercept=1,  prec=1))
 
