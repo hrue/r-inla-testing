@@ -1,8 +1,7 @@
-kappa.mu = 1.1
-kappa.eta = exp(1.2)
-kappa.y = 1.3
-
-y = 1.4
+kappa.mu = exp(rnorm(1))
+kappa.eta = exp(20)
+kappa.y = exp(rnorm(1))
+y = rnorm(1)
 ## joint with y
 Q = matrix(c(
         kappa.y, -kappa.y, 0,
@@ -23,6 +22,4 @@ r = inla(y ~ 1,
 ## mean is the marginal mean for y,  which is 0
 true = dnorm(x=y, mean=0, sd = sqrt(var.y),  log=TRUE) 
 est = r$mlik[1]
-
 print(c(true, est, true-est))
-
