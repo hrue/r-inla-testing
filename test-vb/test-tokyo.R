@@ -26,6 +26,6 @@ rrr = inla(formula,
            inla.mode = "classic", 
            control.inla = list(strategy = "laplace"))
 
-plot(r$summary.random$time$mean, col = "black", pch = 19)
+plot(r$summary.random$time$mean, col = "black", pch = 19, cex = 0.2)
 lines(rrr$summary.random$time$mean, lwd = 5, lty = 2, col = "red")
 lines(rr$summary.random$time$mean, lwd = 3, lty = 3, col = "blue")
