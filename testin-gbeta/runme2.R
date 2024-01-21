@@ -1,0 +1,13 @@
+y <- runif(1)
+phi <- exp(rnorm(1))
+xx <- c()
+yy <- c()
+xx <- seq(-4, 4, by = 0.01)
+mu <- inla.link.invlogit(xx)
+yy <- dbeta(y, mu * phi, - mu * phi + phi, log = TRUE)
+par(mfrow = c(1, 2))
+plot(xx, yy, type = "l")
+s <- splinefun(xx, yy)
+plot(xx, s(xx, deriv = 2), type = "l")
+print(all(s(xx, deriv = 2) < 0))
+
