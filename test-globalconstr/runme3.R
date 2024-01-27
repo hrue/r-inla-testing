@@ -4,7 +4,7 @@ idx <- 1:n
 idx2 <- 1:n
 
 ## global constraints
-A = rbind(c(rep(0, n), 1:n, 1:n), c(rep(0, n), as.vector(scale(1:(2*n)))))
+A = rbind(c(1:n, 1:n), as.vector(scale(1:(2*n))))
 e = c(0.11, 0.22)
 
 r <- inla(y ~ -1 + f(idx, constr = TRUE) + f(idx2, constr = FALSE),
@@ -13,11 +13,10 @@ r <- inla(y ~ -1 + f(idx, constr = TRUE) + f(idx2, constr = FALSE),
           data = list(y = y, idx = idx, idx2 = idx2, A = A, e = e),
           control.compute = list(config = TRUE), 
           verbose = TRUE, 
-          inla.mode = "classic", 
           control.expert = list(globalconstr = list(A = A, e = e)))
 
 ## check...
-xx <- r$mode$x
+xx <- r$mode$x[-(1:n)]
 A %*% xx - e
 
 ## check that the global constraint is appended to the other ones defined in 'formula'
