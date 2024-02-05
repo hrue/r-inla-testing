@@ -10,10 +10,6 @@ SAVE_res=F # save results (creates .RDATA file)
 library(INLA)
 library(PermAlgo)
 library(mvtnorm)
-inla.setOption(inla.mode="experimental")
-inla.setOption(inla.call="inla.mkl.work")
-##inla.setOption(inla.call="remote")
-inla.setOption(num.threads = "4:1")
 set.seed(1) # seed for data generation
 nmod <- 1 # number of models simulated
 nmod <- 1 # number of models simulated

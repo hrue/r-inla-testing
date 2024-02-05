@@ -1,10 +1,5 @@
 library(INLA)
-INLA:::inla.my.update(b = T)
 library(JM) # contains the dataset
-inla.setOption(inla.mode="experimental")
-##inla.setOption(inla.call="remote")
-inla.setOption(inla.call="inla.mkl.work")
-##inla.setOption(num.threads="8:1")
 set.seed(1) # seed for data generation
 
 # store results in object "res"

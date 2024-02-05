@@ -2,7 +2,6 @@ library(INLA) # Bayesian inference with INLA
 library(INLAjoint) # Interface for joint modeling with INLA
 library(PermAlgo) # Permutation algorithm to generate survival times dependent on time-varying covariates
 library(mvtnorm)
-inla.setOption(smtp="taucs")
 set.seed(1)
 
 # data simulation
