@@ -13,9 +13,10 @@ A = inla.as.sparse(toeplitz(c(kern[-(1:h)],  rep(0,  n-nh),  kern[1:h])))
 eta <- 5 + as.vector(A %*% x)
 y <- rpois(n, lambda = exp(eta))
 
+A[1, ] <- 0
 r = inla(y ~ 1 + f(idx, w, model="ar1", A.local = A), 
          data = list(y = y, idx = 1:n, A = A, w = rep(0, n)),
-         family = "poisson")
+         family = "poisson", keep = T)
 
 idx <- 1:n
 par(mfrow = c(2, 2))

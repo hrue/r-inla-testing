@@ -22,7 +22,5 @@ formula <- O ~ f(ID.area, model = "bym2", graph = g, constr = TRUE)
 load("data.INLA")
 r <- inla(formula, data = data.INLA,
           family = "poisson", E = E,
-          inla.mode = "experimental",
-          ##keep = TRUE,
           verbose = TRUE)
 
