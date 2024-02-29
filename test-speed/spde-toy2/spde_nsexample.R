@@ -112,7 +112,7 @@ fitns2 <- inla(
     control.inla = list(control.vb = list(strategy = "variance")), 
     verbose = TRUE)
 
-stop("XXXXXXXXXXXX")
+##stop("XXXXXXXXXXXX")
 
 rbind(fitns0$cpu, fitns1$cpu, fitns2$cpu)
 

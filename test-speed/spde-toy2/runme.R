@@ -1,5 +1,4 @@
-inla.setOption(inla.call = NULL,
-               num.threads = "4:1")
+inla.setOption(inla.call = NULL, num.threads = "4:1")
 first.time <- TRUE
 source("spde_nsexample.R")
 orig <- c(fitns0$cpu[2], 
