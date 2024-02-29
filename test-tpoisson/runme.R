@@ -1,3 +1,4 @@
+INLA:::inla.my.update(b = T)
 n <- 3000
 x <- rnorm(n)
 eta <- 1 + 0.2 * x

@@ -2,6 +2,8 @@ if (FALSE) {
     inla.setOption(smtp = 'taucs', safe = FALSE, num.threads = "1:1")
 }
 
+##INLA:::inla.my.update(b = T)
+
 N <- 200
 s <- 0.1
 x <- 1:N
