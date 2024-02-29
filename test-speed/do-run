@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 
-for d in ~/p/inla/binaries/Version_*; do
-    
-    echo -e -n "$d "
-    (
-	for i in $(seq 1 10); do
-	    $d/64bit/inla.mkl.run -t2 Model.ini 2>/dev/null | grep stage1 | awk '{print $4}'
-	done
-    ) | awk '{ s = s + $1; } END{print s/NR}'
-    
+for d in ~/p/inla/binaries/Version_{23.12,24}* ~/p/inla/binaries/devel; do
+    if [ -d "$d" ]; then
+	echo -e -n "$d "
+	(
+	    for i in $(seq 1 5); do
+		env INLA_MALLOC_LIB=tc $d/64bit/inla.mkl.run -t2 Model.ini 2>/dev/null | grep stage1 | awk '{print $4}'
+	    done
+	) | awk '{ s = s + $1; } END{print s/NR}'
+    fi
 done
 
     
