@@ -15,7 +15,10 @@ idx = rep(xvalues,  nrep)
 rep = rep(1:nrep,  each = n)
 
 r = inla(y ~ 1 + f(idx, model="rw2", replicate = rep),
-    data = data.frame(y, idx, rep))
+    data = data.frame(y, idx, rep), verbose = T)
+
+rr = inla(y ~ 1 + f(idx, model="rw2", replicate = rep),
+    data = data.frame(y, idx, rep), verbose = T, inla.call = "inla.mkl.work")
 
 
 par(mfrow=c(2, 2))
@@ -31,4 +34,3 @@ points(xvalues,  y3)
 
 plot(xvalues, r$summary.random$idx$mean[3*n + 1:n],  type = "l", lwd=2)
 points(xvalues,  y4)
-

@@ -3,9 +3,9 @@
 ## This is just to avoid a check to locations to close. We can fix this in the example, but its
 ## easier to just to that here. Remove this and then this error will appear with some
 ## probability.
-m = get("inla.models", INLA:::inla.get.inlaEnv())
-m$latent$rw2$min.diff = NULL
-assign("inla.models", m, INLA:::inla.get.inlaEnv())
+m = get("inla.models", inla.get.inlaEnv())
+m$latent$rw2$min.diff = 1e-5
+assign("inla.models", m, inla.get.inlaEnv())
 
 ## Simulate two curves at different locations
 n = 20
@@ -29,9 +29,12 @@ r = inla(y ~ -1 +
              f(x12, model="rw2", scale.model=TRUE, replicate = re, values = xv), 
          data = data.frame(y, x12, xv))
 
+rr = inla(y ~ -1 +
+             f(x12, model="rw2", scale.model=TRUE, replicate = re, values = xv), 
+         data = data.frame(y, x12, xv), inla.call = "inla.mkl.work")
+
 par(mfrow=c(2, 1))
 plot(r$summary.random$x12$ID[1:n2], r$summary.random$x12$mean[1:n2], type="l")
 points(x1, y1)
 plot(r$summary.random$x12$ID[n2 + 1:n2], r$summary.random$x12$mean[n2 + 1:n2], type="l")
 points(x2, y2)
-
