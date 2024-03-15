@@ -18,10 +18,14 @@ data <- read.csv(url)
 load("Rs")
 g <- inla.read.graph(Rs)
 
-formula <- O ~ f(ID.area, model = "bym2", graph = g, constr = TRUE)
+formula <- O ~ f(ID.area, model = "bym", graph = g, constr = TRUE)
 load("data.INLA")
-r <- inla(formula, data = data.INLA,
-          family = "poisson", E = E,
-          inla.call = "", keep = T, 
-          verbose = TRUE)
+r1 <- inla(formula, data = data.INLA,
+           family = "poisson", E = E,
+           control.compute = list(config = TRUE), 
+           verbose = !TRUE)
 
+r2 <- inla(formula, data = data.INLA,
+           family = "poisson", E = E,
+           control.compute = list(config = TRUE), 
+           verbose = !TRUE, inla.call = "inla.mkl.work")
