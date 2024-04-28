@@ -1,6 +1,6 @@
-n <- 20
-rho <- 0.5
-s <- 1
+n <- 200
+rho <- 0.8
+s <- 0.5
 x <- scale(arima.sim(n, model = list(ar = rho)))
 y <- x + rnorm(n, sd = s)
 nt <- "1:1"
@@ -8,9 +8,9 @@ nt <- "1:1"
 INLA:::inla.my.update()
 r <- inla(y ~ 1 + f(idx, model = "ar1",
                     hyper = list(prec = list(initial = 0,
-                                             fixed = TRUE),
+                                             fixed = !TRUE),
                                  rho = list(initial = inla.models()$latent$ar1$hyper$theta2$to.theta(rho), 
-                                            fixed = TRUE))),
+                                            fixed = !TRUE))),
           data = data.frame(y, idx = 1:n), 
           family = "gaussian",
           control.family = list(hyper = list(prec = list(initial = log(1/s^2),
@@ -20,7 +20,7 @@ r <- inla(y ~ 1 + f(idx, model = "ar1",
                                                      num.level.sets = -1, 
                                                      selection = -(1:n), 
                                                      size.max = 32, 
-                                                     verbose = TRUE)),
+                                                     verbose = !TRUE)),
           #control.inla = list(int.strategy = "eb"),
           verbose = TRUE,
           safe = FALSE, keep = !T, 
@@ -30,9 +30,9 @@ r <- inla(y ~ 1 + f(idx, model = "ar1",
 
 rr <- inla(y ~ 1 + f(idx, model = "ar1",
                     hyper = list(prec = list(initial = 0,
-                                             fixed = TRUE),
+                                             fixed = !TRUE),
                                  rho = list(initial = inla.models()$latent$ar1$hyper$theta2$to.theta(rho), 
-                                            fixed = TRUE))),
+                                            fixed = !TRUE))),
           data = data.frame(y, idx = 1:n), 
           family = "gaussian",
           control.family = list(hyper = list(prec = list(initial = log(1/s^2),
@@ -42,7 +42,7 @@ rr <- inla(y ~ 1 + f(idx, model = "ar1",
                                                      num.level.sets = -1, 
                                                      selection = (1:n), 
                                                      size.max = 32, 
-                                                     verbose = TRUE)),
+                                                     verbose = !TRUE)),
           #control.inla = list(int.strategy = "eb"),
           verbose = TRUE,
           safe = FALSE, keep = !T, 

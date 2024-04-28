@@ -1,4 +1,4 @@
-n <- 25
+n <- 2500
 x <- rnorm(n)
 s <- 0.1
 y <- 1 + x + rnorm(n, sd = s)

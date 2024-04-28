@@ -1,5 +1,4 @@
-inla.setOption(safe = FALSE)
-n = 10
+n = 1000
 x = rnorm(n, sd = 0.1)
 eta = 1 + x
 mu = exp(eta)
@@ -8,17 +7,10 @@ prec.par = 1.2
 a = prec.par * prec.scale
 b = mu / (prec.par * prec.scale)
 y = rgamma(n, shape = a, scale = b)
-event <- rep(1, n)
-Y <- inla.surv(y, event)
 r = inla(y ~ 1 + x,
-         data = list(Y = Y, x = x),
+         data = list(y = y, x = x),
          scale = prec.scale,
          family = "gamma",
+         control.inla = list(cmin = 0), 
          verbose = TRUE, 
          control.family = list(control.link = list(model = "quantile", quantile = 0.5)))
-if (F)rr = inla(Y ~ 1 + x,
-          data = list(Y = Y, x = x),
-          scale = prec.scale,
-          family = "gammasurv",
-          control.family = list(control.link = list(model = "quantile", quantile = 0.5)))
-

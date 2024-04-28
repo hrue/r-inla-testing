@@ -5,7 +5,7 @@ formula = y ~ -1 + f(time, model="rw2", cyclic=TRUE,
                      constr = FALSE,
                      scale.model = TRUE,
                      fixed = TRUE,
-                     vb.correct = seq(1, dim(Tokyo)[1], by = 40))
+                     vb.correct = seq(1, dim(Tokyo)[1], by = 1))
 
 r = inla(formula,
          family="binomial",

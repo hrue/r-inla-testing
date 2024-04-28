@@ -13,7 +13,8 @@ y <- eta + 1/sqrt(s * exp(eta.prec)) * rnorm(n)
 Y <- inla.mdata(y, s, 1, z, zz)
 r <- inla(Y ~ 1 + x + xx,
           data = list(Y = Y, x = x, xx = xx, z = z, zz = zz, s = s),
-          family = "ggaussian")
+          family = "ggaussian",
+          verbose = T)
 summary(r)
 
 Y <- inla.mdata(y, s)

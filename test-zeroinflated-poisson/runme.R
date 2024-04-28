@@ -1,4 +1,4 @@
-n <- 300
+n <- 3000
 x <- rnorm(n, sd = 0.3)
 eta <- 2+x
 p.zero <- 0.2
@@ -16,6 +16,7 @@ for(idx in 1:n) {
 r <- inla(y ~ 1 + x,
           data = data.frame(y, x),
           family = "zeroinflatedpoisson1",
+          control.compute = list(return.marginals.predictor = TRUE), 
           control.predictor = list(compute = TRUE))
 
 ## this is approximate correct as the uncertainty in p.zero is not accounted for. to do this,
@@ -40,6 +41,7 @@ for(idx in 1:n) {
 r <- inla(y ~ 1 + x,
           data = data.frame(y, x),
           family = "zeroinflatedpoisson0",
+          control.compute = list(return.marginals.predictor = TRUE), 
           control.predictor = list(compute = TRUE))
 
 ## same comment as above
