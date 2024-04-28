@@ -20,6 +20,11 @@ g <- inla.read.graph(Rs)
 
 formula <- O ~ f(ID.area, model = "bym", graph = g, constr = TRUE)
 load("data.INLA")
+rr <- inla(formula, data = data.INLA,
+           family = "poisson", E = E,
+           control.compute = list(control.gcpo = list(enable = T, num.level.sets = 10)), 
+           verbose = T, inla.call = "", keep = T)
+
 r1 <- inla(formula, data = data.INLA,
            family = "poisson", E = E,
            control.compute = list(config = TRUE), 
