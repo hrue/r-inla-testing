@@ -1,4 +1,4 @@
-inla.setOption(inla.call = "inla.mkl.work", num.threads = "4:1", internal.opt = FALSE)
+inla.setOption(num.threads = "4:1", internal.opt = FALSE)
 
 log.dgamma <- function(x) {
     return (dgamma(exp(x), a, b, log = TRUE) + x)

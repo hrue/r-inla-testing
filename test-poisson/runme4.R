@@ -1,4 +1,4 @@
-n <- 40000
+n <- 1000000
 x <- rnorm(n, sd = 1)
 off <- rnorm(n, sd = 0.001)
 off[] <- 0

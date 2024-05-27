@@ -1,7 +1,7 @@
 ## overdispersion parameter in the betabinomial
 rho = 0.1
 
-n = 10^5
+n = 1E4
 z = rnorm(n, sd=0.4)
 Ntrials = sample(1:1000, n, replace=TRUE)
 eta = 1 + z
