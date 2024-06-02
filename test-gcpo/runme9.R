@@ -1,9 +1,3 @@
-library(INLA)
-library(mvtnorm)
-inla.setOption(num.threads = "1:1")
-inla.setOption(inla.call = "inla.mkl.work")
-INLA:::inla.my.update()
-
 id <- 1:7
 n <- length(id)
 Q <- solve(toeplitz(0.999^(0:(n-1))))
