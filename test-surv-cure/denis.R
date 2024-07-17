@@ -1,17 +1,13 @@
-if (FALSE) {
-    INLA:::inla.my.update()
-    inla.setOption(inla.mode = "experimental")
-    inla.setOption(num.threads = "4:1")
-    inla.setOption(inla.call = "inla.mkl.work")
-}
+INLA:::inla.my.update(b = T)
 
-n <- 1000
+
+n <- 10^3
 pcure <- 0.2
 x <- scale(rnorm(n))
 xx <- scale(rnorm(n))
 eta <- 1 + 0.2 * x
 eta.cure <- -1 + 0.2 * xx
-pcure <- mean(1/(1+exp(-eta.cure[i])))
+pcure <- mean(1/(1+exp(-eta.cure)))
 lambda <- exp(eta)
 alpha <- 1.2
 variant <- 1

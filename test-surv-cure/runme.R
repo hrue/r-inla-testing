@@ -1,9 +1,7 @@
-INLA:::inla.my.update()
-inla.setOption(inla.mode = "experimental")
+INLA:::inla.my.update(b = T)
 inla.setOption(num.threads = "4:1")
-inla.setOption(inla.call = "inla.mkl.work")
 
-n <- 10000
+n <- 10^5
 pcure <- 0.1
 x <- scale(rnorm(n))
 xx <- scale(rnorm(n))
