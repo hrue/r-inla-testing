@@ -36,24 +36,19 @@ r <- inla(y ~ 1 +
           verbose = TRUE)
 
 rr <- inla(y ~ 1 +
-              x +
-              f(idx, w, model = "iid",
-                hyper = list(prec = list(
-                                 initial = 0,
-                                 fixed = TRUE))) +
-              f(iidx, w, copy = "idx", fixed = FALSE), 
-          control.family = list(hyper = list(prec = list(
-                                                 prior = "loggamma",
-                                                 param = c(100, 10)))), 
-          control.expert = list(jp = jpr),
-          data = data.frame(y,
-                            x,
-                            idx = rep(1, n),
-                            w = rep(0, n),
-                            iidx = rep(1, n)), 
-          verbose = TRUE)
+               x +
+               f(idx, w, model = "iid",
+                 hyper = list(prec = list(
+                                  initial = 0,
+                                  fixed = TRUE))) +
+               f(iidx, w, copy = "idx", fixed = FALSE), 
+           control.expert = list(jp = jpr),
+           data = data.frame(y,
+                             x,
+                             idx = rep(1, n),
+                             w = rep(0, n),
+                             iidx = rep(1, n)), 
+           verbose = TRUE)
 summary(r)
 summary(rr)
-
 r$mlik - rr$mlik
-
