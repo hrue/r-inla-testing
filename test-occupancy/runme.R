@@ -1,9 +1,9 @@
 INLA:::inla.my.update(b = T)
-inla.setOption(num.threads = 4)
+inla.setOption(num.threads = 1)
 
-n <- 5
-m <- 3
-nc <- 2
+n <- 50000
+m <- 100
+nc <- 3
 beta <- c(-1, rnorm(nc-1, sd = 0.2))
 Y <- matrix(NA, n, m)
 X <- matrix(NA, n, m*nc)
@@ -38,5 +38,14 @@ r <- inla(inla.mdata(Y, X) ~ 1 + z,
           verbose = TRUE,
           control.fixed = list(prec.intercept = 1), 
           control.inla = list(cmin = 0.0))
+rr <- inla(inla.mdata(Y, X) ~ 1 + z,
+          family = "occupancy",
+          data = list(Y = Y, X = X, z = z),
+          safe = FALSE,
+          verbose = TRUE,
+          control.fixed = list(prec.intercept = 1), 
+          control.inla = list(cmin = 0.0),
+          inla.call = "inla.mkl.work")
 summary(r)
-cbind(beta, r$summary.hyperpar[, "mean"])
+summary(rr)
+cbind(beta, r$summary.hyperpar[, "mean"],  rr$summary.hyperpar[, "mean"])
