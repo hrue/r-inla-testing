@@ -24,5 +24,5 @@ inla.setOption(inla.call = "inla.mkl.work")
 
 r = inla(formula, family="coxph", data=Leuk, keep = T, safe = F, 
          control.hazard = list(n.intervals = 50),
-         inla.call = "", 
+         inla.call = "",
          verbose = T, num.threads = "1:1")
