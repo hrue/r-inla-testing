@@ -22,7 +22,5 @@ inla.setOption(inla.call = "inla.mkl.work")
 ##Sys.unsetenv('INLA_TRACE')
 
 
-r = inla(formula, family="coxph", data=Leuk, keep = T, safe = F, 
-         control.hazard = list(n.intervals = 50),
-         inla.call = "",
-         verbose = T, num.threads = "1:1")
+r = inla(formula, family="coxph", data=Leuk, safe = F, 
+         control.hazard = list(n.intervals = 50))
