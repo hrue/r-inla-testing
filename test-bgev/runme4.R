@@ -164,7 +164,8 @@ rr = inla(
                         hessian.correct.skewness.only = TRUE, 
                         control.vb = list(enable = !FALSE, strategy = "variance")), 
     control.fixed = list(prec = 10,  prec.intercept = 0), 
-    inla.call = "inla.mkl.work", verbose=FALSE)
+    inla.call = "inla.mkl.work", verbose=FALSE,
+    control.compute = list(config = TRUE))
 
 r$summary.hyperpar[,c("mean","sd")]
 rr$summary.hyperpar[,c("mean","sd")]
