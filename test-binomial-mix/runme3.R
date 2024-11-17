@@ -1,7 +1,10 @@
+INLA:::inla.my.update(b = T)
+inla.setOption(num.threads = "20:1")
+
 n <- 10^5
 size <- sample(5:10, n, replace = TRUE)
 
-m <- 5
+m <- 25
 m2 <- 2*m
 beta.p1 <- rnorm(m, sd = 1/sqrt(m))
 beta.p2 <- rnorm(m, sd = 1/sqrt(m))
@@ -41,3 +44,4 @@ r <- inla(inla.mdata(Y, Z, W) ~ 1 + x + xx,
 
 print(round(dig = 4, cbind(estimate = r$summary.fixed[,"mean"], true = 1)))
 print(round(dig = 4, cbind(estimate =  r$summary.hyperpar[,"mean"], true = beta)))
+
