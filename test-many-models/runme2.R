@@ -5,21 +5,18 @@ Y <- matrix(rnorm(nm*n), nm, n)
 tref.1 <- Sys.time()
 wd <- "model.files"
 unlink(wd, recursive = TRUE)
-inla.setOption(working.directory = wd,
-               verbose = FALSE,
-               num.threads = "1:1")
-Rprof()
+
 for(i in 1:nm) {
     y <- Y[i, ]
-    inla(y ~ 1, data = data.frame(y), inla.call = "",
-         keep = TRUE, verbose = FALSE)
+    inla(y ~ 1, data = data.frame(y),
+         working.directory = wd, 
+         inla.call = "", keep = TRUE)
 }
-Rprof(NULL)
-r <- inla.run.many(wd)
+print(Sys.time() - tref.1)
+r <- INLA:::inla.run.many(wd, num.threads = "1:1", cleanup = TRUE)
 tref.1 <- Sys.time() - tref.1
 
 tref.2 <- Sys.time()
-inla.setOption(working.directory = NULL)
 rr <- rep(list(list()), nm)
 for(i in 1:nm) {
     y <- Y[i, ]
