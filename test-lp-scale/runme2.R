@@ -1,19 +1,21 @@
 m <- 3
-n <- 20
+n <- 2000
 N <- (m+1)*n
 lp.scale <- rep(c(NA, 1:m), each = n)
 
+off <- runif(N)
+
 eta <- lp.scale
 eta[is.na(eta)] <- 1
-y <- rpois(N, lambda = exp(eta))
+y <- rpois(N, lambda = exp(off + eta))
 Y <- matrix(NA, N, m+1)
 for(i in 1:(m+1)) {
     idx <- (i-1)*n + 1:n
     Y[idx, i] <- y[idx]
 }
-r <- inla(Y ~ 1,
+r <- inla(Y ~ 1 + offset(off), 
           family = rep("poisson", m+1), 
-          data = list(Y = Y, lp.scale = lp.scale), 
+          data = list(Y = Y, lp.scale = lp.scale, off = off), 
           lp.scale = lp.scale,
           control.lp.scale = list(
               hyper =  list(theta1 = list(param = c(1, 10)),
