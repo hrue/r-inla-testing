@@ -62,10 +62,10 @@ r <- inla(mf,
               A=inla.stack.A(stk.e)),
           control.mode = list(theta = c(1.4289345305,  4.9656994790, -1.8062028998, -0.6014129724),
                               restart = TRUE), 
-          num.threads = 4,
+          num.threads = 8,
           verbose = TRUE,
-          safe = FALSE, 
-          inla.call = "inla.mkl.work")
+          safe = FALSE)
+ 
 
 x <- r$mode$x
 Aeta <- r$mode$x[1:2000]

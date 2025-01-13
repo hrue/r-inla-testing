@@ -1,6 +1,6 @@
 set.seed(12345)
-n <- 10^5
-inla.setOption(num.threads = "1:4", safe = FALSE, verbose = FALSE)
+n <- 10^4
+inla.setOption(num.threads = "1:1", safe = FALSE, verbose = FALSE)
 cat(sep="", "\n")
 debug <- !TRUE
 

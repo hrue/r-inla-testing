@@ -1,4 +1,5 @@
 library(INLA)
+library(sp)
 
 
 
@@ -7,8 +8,8 @@ library(INLA)
     n <- nrow(PRprec)
     PRprec[1:3, 1:7]
 
-    crs.ll <- CRS('+proj=longlat +ellps=WGS84')
-    crs.mollkm <- CRS('+proj=moll +units=km')
+    crs.ll <- inla.CRS('+proj=longlat +ellps=WGS84')
+    crs.mollkm <- inla.CRS('+proj=moll +units=km')
     prec.avg <- SpatialPointsDataFrame(
         spTransform(
             SpatialPoints(
