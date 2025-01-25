@@ -82,6 +82,8 @@ test-speed/Mult-Sp-INLA/CLMFires_shared.png
 
 test-speed/Mult-Sp-INLA/dismap_sim_data.RData
 
+test-speed/inla-discussion-list/
+
 test-spline/points.txt
 
 test-spline/spline.txt
@@ -89,3 +91,5 @@ test-spline/spline.txt
 test-spline/tt
 
 test-link-gev/output
+
+test-rgeneric/INLA/data/

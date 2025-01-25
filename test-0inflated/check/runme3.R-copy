@@ -1,0 +1,59 @@
+##    p = prob + (1.0 - prob) / (1+exp(-x))
+
+fix <- function(x, p, y, ny, true = FALSE)
+{
+    l1 <- function(x, p) log(p + (1-p) / (1+exp(-x)))
+    l2 <- function(x, p) log(1-(p + (1-p) / (1+exp(-x))))
+    ll <- function(x, p) y * l1(x, p) + ny * l2(x, p)
+
+    if (true) {
+        return (y * l1(x, p) + ny * l2(x, p))
+    }
+
+    x0 <- -log(- (ny * p + sqrt(y*p * (1-p)^2 * (y + ny))) /
+               (p * (y * p + ny * p - y)))
+
+    xL <- x0 + 0.01
+    xH <- xL + 0.31
+    idx <- which(x <= xH)
+    res <- numeric(length(x))
+    res[-idx] <- ll(x[-idx], p)
+
+    n <- y + ny
+    if (length(idx) > 0) {
+        z <- xH - x[idx]
+        xx <- xH + (xL - xH) * z / (1 + z)
+        zz <- x[idx] - xx
+
+        emx <- exp(-xx)
+        em2x <- exp(-2*xx)
+        c1 <-  1 + emx
+        c2 <- p*emx + 1
+        g0 <- ll(xx, p)
+        g1 <- -(emx * (-y + n*p) + ny) / (c1 * c2)
+        g2 <- -emx * (n + ny * p^2 * em2x + 2 * ny * p * emx - y * em2x * p + y * em2x * p^2 - y
+            * p) / (c1^2 *c2^2)
+        res[idx] <- g0 + zz * (g1 + 0.5 * g2 * zz)
+    }
+    return (res)
+}
+
+p <- 0.1
+y <- 1
+ny <- 2
+
+x <- seq(-4, 4, by = 0.01)
+ll <- fix(x, p, y, ny, true = TRUE)
+fun <- splinefun(x, ll)
+
+ll.new <- fix(x, p, y, ny, true = FALSE)
+fun.new <- splinefun(x, ll.new)
+
+par(mfrow = c(1, 2))
+plot(x, fun(x),  type = "l")
+lines(x, fun.new(x),  lty = 2)
+
+plot(x, fun(x, deriv = 2),  type = "l")
+lines(x, fun.new(x, deriv = 2), lty = 2)
+
+
