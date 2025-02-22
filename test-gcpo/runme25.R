@@ -1,13 +1,15 @@
-n <- 5000
+n <- 20000
 rho <- 0.7
 s <- 0.5
 x <- scale(arima.sim(n, model = list(ar = rho)))
 y <- rpois(n, exp(x))
-nt <- "1:1"
+nt <- "10:2"
 
 nc <- 2
 
-Sys.setenv(INLA_TRACE = "GMRFLib_gcpo_build")
+##Sys.setenv(INLA_TRACE = "GMRFLib_gcpo_build")
+
+inla.setOption(malloc.lib = 'je')
 
 A <- matrix(rnorm(n*nc), nc, n)
 e <- rep(0, nc)
@@ -31,6 +33,7 @@ r <- inla(y ~ 1 + f(idx, model = "ar1",
           verbose = TRUE, 
           safe = FALSE, keep = FALSE, 
           num.threads = nt)
+
 rr <- inla(y ~ 1 + f(idx, model = "ar1",
                      extraconstr = list(A = A, e = e), 
                      hyper = list(prec = list(initial = 0,
@@ -48,7 +51,7 @@ rr <- inla(y ~ 1 + f(idx, model = "ar1",
                control.vb = list(enable = TRUE,
                                  strategy = "mean")), 
            verbose = TRUE,
-           safe = FALSE, keep = FALSE, 
+           safe = FALSE, keep = !FALSE, 
            num.threads = nt,
            inla.call = "inla.mkl.work")
 
