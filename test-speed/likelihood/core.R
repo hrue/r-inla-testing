@@ -1,6 +1,6 @@
 set.seed(12345)
-n <- 10^4
-inla.setOption(num.threads = "1:1", safe = FALSE, verbose = FALSE)
+n <- 10^5
+inla.setOption(num.threads = "8", safe = FALSE, verbose = FALSE)
 cat(sep="", "\n")
 debug <- !TRUE
 
@@ -16,6 +16,7 @@ cat(sep="", "stdnormal(disable=TRUE) ", r$cpu.used[2], "\n")
 if (debug) cat("\t", "loglikelihood ", r$mlik[2], "\n")
 
 t.ref <- Sys.time()
+trace.output <- FALSE
 
 for(link in c("logit", "probit", "cloglog"))
 {
@@ -25,6 +26,7 @@ for(link in c("logit", "probit", "cloglog"))
               control.family = list(
                   link = link))
     cat(sep="", "binomial(size=1,", link, ") ", r$cpu.used[2], "\n")
+    if (trace.output) print(tail(r$logfile[grep("ai_vb_correct_mean", r$logfile)]))
 
     y <- rbinom(n, size = 10, prob = 0.5)
     r <- inla(y ~ 1, data = data.frame(y, m = 10),
@@ -33,6 +35,7 @@ for(link in c("logit", "probit", "cloglog"))
               control.family = list(
                   link = link))
     cat(sep="", "binomial(size=10,", link, ") ", r$cpu.used[2], "\n")
+    if (trace.output) print(tail(r$logfile[grep("ai_vb_correct_mean", r$logfile)]))
 
     y <- rbinom(n, size = 100, prob = 0.5)
     r <- inla(y ~ 1, data = data.frame(y, m = 100),
@@ -40,6 +43,7 @@ for(link in c("logit", "probit", "cloglog"))
               control.family = list(
                   link = link))
     cat(sep="", "binomial(size=100,", link, ") ", r$cpu.used[2], "\n")
+    if (trace.output) print(tail(r$logfile[grep("ai_vb_correct_mean", r$logfile)]))
 
     y <- rbinom(n, size = 1, prob = 0.5)
     r <- inla(y ~ 1, data = data.frame(y),
@@ -48,6 +52,7 @@ for(link in c("logit", "probit", "cloglog"))
                   hyper = list(rho = list(fixed = TRUE)), 
                   link = link))
     cat(sep="", "betabinomial(size=1,", link, ") ", r$cpu.used[2], "\n")
+    if (trace.output) print(tail(r$logfile[grep("ai_vb_correct_mean", r$logfile)]))
 
     y <- rbinom(n, size = 10, prob = 0.5)
     r <- inla(y ~ 1, data = data.frame(y, m = 10),
@@ -56,6 +61,7 @@ for(link in c("logit", "probit", "cloglog"))
                   hyper = list(rho = list(fixed = TRUE)), 
                   link = link))
     cat(sep="","betabinomial(size=10,", link, ") ", r$cpu.used[2], "\n")
+    if (trace.output) print(tail(r$logfile[grep("ai_vb_correct_mean", r$logfile)]))
 
     y <- rbinom(n, size = 100, prob = 0.5)
     r <- inla(y ~ 1, data = data.frame(y, m = 100),
@@ -64,12 +70,14 @@ for(link in c("logit", "probit", "cloglog"))
                   hyper = list(rho = list(fixed = TRUE)), 
                   link = link))
     cat(sep="", "betabinomial(size=100,", link, ") ", r$cpu.used[2], "\n")
+    if (trace.output) print(tail(r$logfile[grep("ai_vb_correct_mean", r$logfile)]))
 }
 
 y <- rpois(n, 1)
 r <- inla(y ~ 1, data = data.frame(y),
           family = "poisson")
 cat(sep="", "poisson ", r$cpu.used[2], "\n")
+if (trace.output) print(tail(r$logfile[grep("ai_vb_correct_mean", r$logfile)]))
 
 y <- rgamma(n, shape = 1, rate = 1)
 r <- inla(y ~ 1, data = data.frame(y),
@@ -78,6 +86,7 @@ r <- inla(y ~ 1, data = data.frame(y),
               hyper = list(prec = list(initial = 0,
                                        fixed = TRUE))))
 cat(sep="", "gamma ", r$cpu.used[2], "\n")
+if (trace.output) print(tail(r$logfile[grep("ai_vb_correct_mean", r$logfile)]))
 
 y <- rgamma(n, shape = 1, rate = 1)
 r <- inla(y ~ 1, data = data.frame(y),
@@ -89,6 +98,7 @@ r <- inla(y ~ 1, data = data.frame(y),
                   model = "quantile",
                   quantile = 0.5)))
 cat(sep="", "gamma(quantile) ", r$cpu.used[2], "\n")
+if (trace.output) print(tail(r$logfile[grep("ai_vb_correct_mean", r$logfile)]))
 
 ###
 ###
