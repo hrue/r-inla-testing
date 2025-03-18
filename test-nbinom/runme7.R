@@ -16,6 +16,4 @@ r <- inla(Y ~ 1 + x,
          verbose = T)
 summary(r)
 plot(E * r$summary.fitted.values$mean, Y)
-
-plot(E * r$summary.fitted.values$mean, Y)
 abline(a=0,b=1, lwd = 3, col = "blue")
