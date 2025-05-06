@@ -6,7 +6,7 @@ y <- x + rnorm(n, sd = s)
 nt <- "1:1"
 
 weights = runif(n)
-INLA:::inla.my.update()
+INLA:::inla.my.update(b = T)
 rr <- inla(y ~ 1 +
                f(idx, model = "ar1",
                  hyper = list(prec = list(initial = 0,
