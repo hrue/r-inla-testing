@@ -1,7 +1,7 @@
 INLA:::inla.my.update(b = T)
 set.seed(123)
-n <- 7
-nc <- 5
+n <- 70
+nc <- 55
 
 A <- matrix(rnorm(n*nc), nc, n)
 e <- rep(0, nc)
@@ -29,6 +29,7 @@ r <- inla(y ~ -1 +
                  values = 1:n), 
           data = data.frame(y = seq(-5, 5, len = n), idx = 1:n),
           family = "stdnormal",
+          keep = TRUE,
           verbose = TRUE)
 
 round(dig = 5, cbind(rr$summary.random$idx$mean, r$summary.random$idx$mean))
