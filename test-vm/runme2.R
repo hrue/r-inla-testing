@@ -1,9 +1,10 @@
 library(circular)
 
-lfun <- function(x) inla.link.invtan(x)
-lfuninv <- function(x) inla.link.tan(x)
+lfun <- function(x) 2 * pi * (1/(1+exp(-x)) - 0.5)
+lfun <- function(x) 2 * pi * (1/(1+exp(-x))) - pi
+lfuninv <- function(x) log((pi + x)/(pi - x))
 
-n <- 3000
+n <- 300
 x <- rnorm(n, sd = 0.2)
 x <- x - mean(x)
 mu <- lfun(0.1 + x)
@@ -15,7 +16,8 @@ for(i in 1:n) {
 r <- inla(y ~ 1 + x,
           data = data.frame(y, x),
           family = "vm",
-          control.family = list(link = "tan", 
+          control.inla = list(cmin = 0), 
+          control.family = list(link = "tan.pi",
                                 hyper = list(
                                     prec = list(initial = log(kappa),
                                                 fixed = !TRUE))), 

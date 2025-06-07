@@ -6,10 +6,9 @@ y = numeric(n)
 ## I want to be able to look at this one
 p = numeric(n)
 N = 1+rpois(n, lambda = 50)
-alpha = 0.5
+alpha = 0.3
 
-for(i in 1:n)
-{
+for(i in 1:n) {
     eta = x[i] + z[i]
     m = exp(eta)
     ## OOPS: q = 1-p
@@ -27,8 +26,9 @@ i = 1:n
 formula = y ~ f(i, model="iid") + z
 data = data.frame(y=y, x=x, z=z, N=N, i=i)
 
-r = inla(formula, family = "zeroinflatedbinomial2", data=data, Ntrials=N, verbose=TRUE,
-        control.inla=list(tolerance=1e-4))
+r = inla(formula, family = "zeroinflatedbinomial2", data=data, Ntrials=N, verbose=TRUE)
+summary(r)
+
 
 
     
