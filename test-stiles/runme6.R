@@ -1,3 +1,5 @@
+INLA:::inla.my.update(b = TRUE)
+
 data(Germany)
 g = inla.read.graph(system.file("demodata/germany.graph", package="INLA"))
 source(system.file("demodata/Bym-map.R", package="INLA"))
@@ -26,15 +28,13 @@ if (!FALSE) {
     ##r <- inla.rerun(r)
 }
 
-INLA:::inla.my.update(b = TRUE)
 rr = inla(formula3,family="poisson",data=Germany,E=E, verbose = !FALSE, keep = FALSE)
 print(rr$cpu.used)
 print(rr$cpu.intern)
-stop("XXXXXXXXXXXXXXXXXXXXXXXXXXX")
 rr <- inla.rerun(rr)
 
 inla.setOption(smtp = 'stiles')
-rrr = inla(formula3,family="poisson",data=Germany,E=E)
+rrr = inla(formula3,family="poisson",data=Germany,E=E, verbose = TRUE)
 print(rrr$cpu.used)
 print(rrr$cpu.intern)
 rrr = inla.rerun(rrr)
@@ -46,4 +46,3 @@ mean(abs(r$summary.random$region.struct$mean - rr$summary.random$region.struct$m
 mean(abs(r$summary.random$region.struct$mean - rrr$summary.random$region.struct$mean))
 mean(abs(r$summary.random$region.struct$sd/rr$summary.random$region.struct$sd - 1))
 mean(abs(r$summary.random$region.struct$sd/rrr$summary.random$region.struct$sd - 1))
-

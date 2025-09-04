@@ -2,7 +2,6 @@ INLA:::inla.my.update(b = T)
 
 n <- 55
 Y <- inla.mdata(rnorm(n))
-
 cloglike <- inla.cloglike.define(model = "inla_cloglike_gaussian",
                                  shlib = "cloglike-demo-gaussian.so",
                                  debug = FALSE)

@@ -1,7 +1,7 @@
 trace.output <- FALSE
 set.seed(12345)
 n <- 2*10^6
-inla.setOption(num.threads = "1:8", safe = FALSE, verbose = FALSE)
+inla.setOption(verbose = FALSE, num.threads = "1:12", safe = FALSE, verbose = FALSE)
 cat(sep="", "\n")
 
 Sys.setenv(INLA_TRACE = 'GMRFLib_opt_f_intern')

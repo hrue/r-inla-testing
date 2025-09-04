@@ -1,4 +1,4 @@
-INLA:::inla.my.update(b = T)
+##INLA:::inla.my.update(b = T)
 
 ## first try: do not include the normalizing constant 
 n <- 55
