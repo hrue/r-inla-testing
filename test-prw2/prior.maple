@@ -1,0 +1,11 @@
+with(CodeGeneration);
+gamma1 := rho -> 2*rho / (1+rho^2);
+gamma2 := rho -> (3*rho^2 - rho^4) / (1 + rho^2);
+d := rho -> sqrt(3 - 4*gamma1(rho) + gamma2(rho));
+simplify(-diff(d(rho), rho));
+
+jac := unapply(simplify(log(-diff(d(rho), rho))), rho);
+
+C(convert(series(d(1-eps), eps=0,12), 'horner'));
+C(convert(series(jac(1-eps), eps=0,2), 'horner'));
+
