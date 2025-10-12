@@ -1,0 +1,1 @@
+/home/hrue/p/inla/r-inla/inlaprog/src/cloglike-demo-gaussian.c

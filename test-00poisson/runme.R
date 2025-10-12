@@ -1,6 +1,4 @@
-INLA:::inla.my.update(b = T)
-
-n <- 10^6
+n <- 10^5
 X1 <- rnorm(n)
 X2 <- rnorm(n)
 XX1 <- rep(1, n)
@@ -38,7 +36,6 @@ r <- inla(
     inla.mdata(cbind(y, E, z, zz), cbind(XX1, XX2)) ~ -1 + X1 + X2, 
     family = "00poisson",
     data = data.frame(y,E,z, zz, intercept, X1, X2, XX1, XX2), 
-    ##control.inla = list(cmin = 0.0), 
     control.inla = list(int.strategy = "eb", cmin = 0), 
     verbose=T,
     safe = F, 
