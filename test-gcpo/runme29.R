@@ -22,7 +22,8 @@ r <- inla(y ~ -1 + f(idx, model = "ar1", cyclic = FALSE,
                                                      verbose = TRUE)),
           control.inla = list(int.strategy = "eb"),
           num.threads = "1:1", 
-          verbose = !TRUE,
+          verbose = TRUE,
+          debug = TRUE, 
           safe = FALSE)
 
 m <- 50

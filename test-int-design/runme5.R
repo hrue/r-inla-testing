@@ -19,8 +19,7 @@ r.std = inla(y ~ 1 + x, data = data.frame(y, x),
                  hyper = list(
                      prec = list(
                          prior = "loggamma",
-                         param = param))),
-             inla.arg = "-v -t1:1 -b -P")
+                         param = param))))
 
 r = rep(list(list()), nrow(r.std$joint.hyper))
 for(k in seq_along(r)) {

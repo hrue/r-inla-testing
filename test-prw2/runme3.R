@@ -1,4 +1,4 @@
-INLA:::inla.my.update(b = T)
+##INLA:::inla.my.update(b = T)
 
 n <- 200
 loc <- seq(0, n-1, length.out=n)
@@ -13,7 +13,7 @@ lines(loc, f.true, type='l', lwd = 1, lty = 3)
 r <- inla(y ~ -1 + f(loc, model = "prw2", values = loc,
                      hyper = list(prec = list(initial = log(5),
                                               fixed = !TRUE), 
-                                  range = list(param = c(200, 0.5, h.size, 0),
+                                  range = list(param = c(70, 0.5, h.size, 0),
                                                initial = log(40),
                                                fixed = !TRUE))), 
           family = "normal",
