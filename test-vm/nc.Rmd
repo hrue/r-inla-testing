@@ -1,0 +1,139 @@
+---
+title: "The modified von-Mieses: The normalization constant"
+author: "H Rue"
+date: \today
+output: 
+    pdf_document: 
+        includes:
+            in_header: header.tex
+
+---
+
+\def\diag#1{\text{diag}(#1)}
+\def\Cov#1#2{\text{Cov}(x_{#1}, x_{#2})}
+\def\Var#1{\text{Var}(x_{#1})}
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(INLA)
+INLA:::inla.my.update(b=T)
+
+library(knitr)
+opts_chunk$set(echo =TRUE
+	           , size='small'
+	           , prompt=TRUE
+               , cache=FALSE
+               , cache.path='cache/'
+               , comment=NA
+               , warning=FALSE
+               , message=FALSE
+               , fig.align='center'
+               , fig.path='figures/Alocal/'
+               , fig.pos='H'
+               , background='#ffffff'
+               , results='hold'
+               , eval=TRUE)
+```
+## Introduction
+
+This short note derive an approximate normalization constant for the
+modified von-Mieses distribution use for the new joint model framework
+of Xiang.
+
+The density for the vm-distribution is
+$$
+	\pi(y|\kappa,\eta) = \exp(\kappa\cos(y-\eta)) / C(\kappa)
+$$	
+with normalization constant
+$$
+	C(\kappa) = 2\pi I_0(\kappa)
+$$
+In the regression framework we have link-functions
+$$
+	g(x) = 2\tan^{-1}(x), \qquad g^{-1}(x) = \tan(x/2)
+$$
+and the regression form of the vm is
+$$
+	\pi(y|\kappa, \eta) = \exp(\kappa(\cos(g(g^{-1}(y)-\eta)))) /
+	\tilde{C}(\kappa,\eta)
+$$
+This note derive an approximate expression for
+$\tilde{C}(\kappa,\eta)$.
+
+Doing a Taylor-series expanstion of $\kappa(\cos(g(g^{-1}(y)-\eta)))$,
+with respect to $y$ around $y=g(\eta)$, we get to second order
+$$
+	\kappa - \frac{1}{2}\kappa \left(1 + \eta^2\right)^2 (y - g(\eta))^2
+$$
+which means that
+$$
+	\tilde{C}(\kappa,\eta) = 2\pi I_0\left(\kappa(1+\eta^2)^2\right)
+	\exp\left( \kappa(1 - (1+\eta^2)^2)\right)
+$$
+Note that $\tilde{C}(\kappa,0) = C(\kappa)$ as it should.
+
+
+## Simple comparison
+
+```{r}
+g <- function(x) 2 * atan(x)
+ginv <- function(x) tan(x/2)
+I0 <- function(x) besselI(x, 0)
+
+ud <- function(y, kappa = 1, eta = 0) exp(kappa*cos(g(ginv(y)-eta)))
+C <- function(kappa = 1) 2*pi*I0(kappa)
+d <- function(x, kappa = 1, eta = 0) ud(x, kappa, eta) / C(kappa)
+
+if (FALSE) {
+	kappa <- exp(2.30259)
+	y <- -0.1
+	eta <- -0.372691
+	print(c(y, eta, log(ud(y,kappa,eta) / (C(kappa*(1+eta^2)^2) * exp(kappa-kappa*(1+eta^2)^2)))))
+}
+```
+
+and the main function
+```{r}
+do.plot <- function(kappa) {
+    yy <- seq(-pi, pi, by = 0.0005)
+
+    etas <- seq(0, 2, by = 0.01)
+    m <- length(etas)
+    nc <- numeric(m)
+    nca <- numeric(m)
+    for(i in 1:m) {
+        eta <- etas[i]
+        ##my.plot(yy,  ud(yy, kappa, eta), log = "y", type = "l")
+        nc[i] <- 1/sum(ud(yy, kappa,  eta)*diff(yy)[1])
+        kappa.eff <- kappa * (1+eta^2)^2
+        nca[i] <- 1/(C(kappa.eff) * exp(kappa - kappa.eff))
+    }
+
+    par(mfrow = c(2, 2))
+    plot(etas, nc, type = "l", main=paste0("kappa ",kappa))
+    lines(etas, nca, lwd = 3)
+
+    fun <- splinefun(etas, nc)
+    funa <- splinefun(etas, nca)
+
+    plot(etas, fun(etas, deriv = 1), type = "l")
+    lines(etas, funa(etas, deriv = 1), lwd = 3)
+
+    ylim <- range(c(fun(etas, deriv = 2), funa(etas, deriv = 2)))
+    plot(etas, fun(etas, deriv = 2), type = "l", ylim = ylim)
+    lines(etas, funa(etas, deriv = 2), lwd = 3)
+}
+```
+Now we do
+```{r plot=TRUE}
+do.plot(5)
+```
+```{r plot=TRUE}
+do.plot(10)
+```
+```{r plot=TRUE}
+do.plot(15)
+```
+```{r plot=TRUE}
+do.plot(25)
+```
