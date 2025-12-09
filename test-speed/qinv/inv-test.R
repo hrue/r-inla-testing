@@ -13,6 +13,7 @@ for (gnm in c("inla_graph_small", "inla_graph_medium", "inla_graph_larger")) {
     ## plot with
     if (FALSE) inla.spy(gnm)
 
+    if (!file.exists(gnm)) gnm <- paste0(gnm, ".gz")
     cat("\nread ",  gnm,  "\n")
     Q=inla.graph2matrix(inla.read.graph(gnm))
     diag(Q)=2*nrow(Q)
