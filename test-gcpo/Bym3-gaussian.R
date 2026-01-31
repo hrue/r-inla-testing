@@ -11,23 +11,26 @@ summary(Germany)
 ## just make a duplicated column
 Germany = cbind(Germany,region.struct=Germany$region)
 
-formula3 = Y ~ 1 + f(region.struct,model="besag",graph=g) + f(region,model="iid") + f(x, model="rw2")
+formula3 = Y ~ 1 + f(region.struct,model="besag",graph=g) + f(region,model="iid") + f(x, model="rw2", scale.model = TRUE)
+
+Germany$Y <- sqrt(Germany$Y / Germany$E)
 
 r = inla(formula3,
-         family="poisson",
+         family="t",
+         control.family = list(hyper = list(dof = list(initial = 2, fixed = TRUE),
+                                            prec = list(initial = log(4), fixed = TRUE))), 
          data=Germany, 
-         E=E,
+         verbose = TRUE,
          safe = FALSE, 
          control.fixed = list(prec.intercept = 1), 
-         ##control.inla = list(int.strategy = "eb"), 
+         control.inla = list(int.strategy = "eb", cmin = 0), 
          control.compute = list(
              config = TRUE, 
              cpo = T, 
              control.gcpo = list(
                  enable = TRUE, 
-                 num.level.sets = -1)))
-
-## r <- inla.cpo(r, force = TRUE, mc.cores = 18,  recompute.mode = TRUE)
+                 num.level.sets = -1,
+                 verbose = TRUE)))
 
 source(system.file("demodata/Bym-map.R", package="INLA"))
 
