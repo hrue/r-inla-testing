@@ -20,20 +20,11 @@ g <- inla.read.graph(Rs)
 
 formula <- O ~ f(ID.area, model = "bym", graph = g, constr = TRUE)
 load("data.INLA")
-rr <- inla(formula, data = data.INLA,
+rr <- inla(formula,
+           data = rbind(data.INLA, data.INLA, data.INLA, data.INLA), 
            family = "poisson", E = E,
-           control.compute = list(control.gcpo = list(enable = FALSE, num.level.sets = 2)), 
-           keep = TRUE, verbose = T)
+           control.compute = list(control.gcpo = list(enable = FALSE, num.level.sets = 10)), 
+           num.threads = "1:1", 
+           verbose = T)
 summary(rr)
 rr$cpu.used
-stop("XXXXXXXXXXXXXXXXXX")
-
-r1 <- inla(formula, data = data.INLA,
-           family = "poisson", E = E,
-           control.compute = list(config = TRUE), 
-           verbose = !TRUE)
-
-r2 <- inla(formula, data = data.INLA,
-           family = "poisson", E = E,
-           control.compute = list(config = TRUE), 
-           verbose = !TRUE, inla.call = "inla.mkl.work")

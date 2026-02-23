@@ -204,7 +204,9 @@ if (force.rerun || !exists("result")) {
     stack = inla.stack(stack.est, stack.val, stack.pred)
 
     formula <- (logPM10 ~ -1 + Intercept + A + UTMX + UTMY + WS + TEMP + HMIX + PREC + EMI + f(field, model=spde, group=field.group, control.group=list(model="ar1")))
-
+    ## REMOVE
+    formula <- (logPM10 ~ -1 + Intercept + UTMX + UTMY + WS + TEMP + HMIX + PREC + EMI + f(field, model=spde, group=field.group, control.group=list(model="ar1")))
+    
 
 
     ## ################################
@@ -220,8 +222,8 @@ if (force.rerun || !exists("result")) {
                  control.predictor=list(A=inla.stack.A(stack), compute=TRUE),
                  control.compute=list(cpo=FALSE),
                  control.inla = list(reordering = "metis"),
-                 keep=FALSE, verbose=TRUE,
-                 inla.call="remote", num.threads=12)
+                 keep=!FALSE, verbose=TRUE,
+                 inla.call="", num.threads=12)
     } else {
         result =
             inla(formula,
@@ -229,7 +231,7 @@ if (force.rerun || !exists("result")) {
                  family="gaussian",
                  control.predictor=list(A=inla.stack.A(stack), compute=TRUE),
                  control.compute=list(cpo=FALSE),
-                 keep=FALSE, verbose=TRUE)
+                 keep=!FALSE, inla.call = "", verbose=TRUE)
     }
     print(summary(result))
 
