@@ -2,7 +2,8 @@ n <- 30
 y <- rpois(n, exp(2))
 idx <- 1:n
 
-emerg <- 0.001 ## force it to fail
+## first we force the vb-correction to fail
+emerg <- 0.000001
 r <- inla(y ~ 1 + f(idx, vb.correct = T, initial = log(1), fixed = F), 
           data = data.frame(y, idx),
           control.inla = list(control.vb = list(emergency = emerg), 
@@ -10,10 +11,15 @@ r <- inla(y ~ 1 + f(idx, vb.correct = T, initial = log(1), fixed = F),
           family = "poisson",
           control.compute = list(config = TRUE))
 
+## we can check this computing 'all.good':
+
+## all.good==TRUE means that vb-correction is in effect for all configurations
+
+## all.good==FALSE means that vb-correction is 0, for at least one configuration, which happens
+## either in the Gaussian case, or the vb-correction aborted due to suspecious large values
+
 all.good <- TRUE
 for(i in 1:r$misc$configs$nconfig) {
-    ## if TRUE, then vb-correction is 0, hence either we're in the Gaussian case or
-    ## vb-correction aborted due to suspecious large values
     all.good <-  all.good &
         !all(r$misc$configs$config[[i]]$mean == r$misc$configs$config[[i]]$improved.mean)
 }
@@ -27,13 +33,9 @@ r <- inla(y ~ 1 + f(idx, vb.correct = T, initial = log(1), fixed = T),
           family = "poisson",
           control.compute = list(config = TRUE))
 
-## FALSE means that vb-correction is in effect
 all.good <- TRUE
 for(i in 1:r$misc$configs$nconfig) {
-    ## if TRUE, then vb-correction is 0, hence either we're in the Gaussian case or
-    ## vb-correction aborted due to suspecious large values
     all.good <-  all.good &
         !all(r$misc$configs$config[[i]]$mean == r$misc$configs$config[[i]]$improved.mean)
 }
 print(all.good)
-
