@@ -1,8 +1,9 @@
-m1 <- 35
+m1 <- 41
 m2 <- 40
 n <- m1 * m2
-s <- 0.1
-
+sc <- runif(n)
+s0 <- 1
+s <- s0 / sqrt(sc)
 make.vec <- function(i, n) {
     idx <- rep(0, n)
     idx[i] <- 1
@@ -15,10 +16,11 @@ x2 <- rnorm(m2)
 all.lc <- c()
 all.lc.mean <- c()
 y <- c()
+k <- 1
 for(i in 1:m1) {
     for(j in 1:m2) {
-        y <- c(y, 0 + x1[i] + x2[j] + rnorm(1, sd = s))
-        
+        y <- c(y, 0 + x1[i] + x2[j] + rnorm(1, sd = s[k]))
+        k <- k+1
         lc <- inla.make.lincomb(i1 = make.vec(i, m1),
                                 i2 = make.vec(j, m2))
         names(lc) <- paste0("x1:", i, ",x2:", j)
@@ -35,9 +37,11 @@ r <- inla(y ~ -1 +
               f(i2, hyper = hyper),
           data = data.frame(y,
                             i1 = rep(1:m1, each = m2),
-                            i2 = rep(1:m2, m1)),
+                            i2 = rep(1:m2, m1),
+                            sc = sc),
+          scale = sc, 
           control.family = list(
-              hyper = list(prec = list(initial = log(1/s^2),
+              hyper = list(prec = list(initial = log(1/s0^2),
                                        fixed = TRUE))), 
           lincomb = all.lc)
 
@@ -47,18 +51,23 @@ rr <- inla(y ~ -1 +
               f(i2, hyper = hyper),
           data = data.frame(y,
                             i1 = rep(1:m1, each = m2),
-                            i2 = rep(1:m2, m1)),
+                            i2 = rep(1:m2, m1),
+                            sc = sc), 
+          scale = sc, 
           control.family = list(
-              hyper = list(prec = list(initial = log(1/s^2),
+              hyper = list(prec = list(initial = log(1/s0^2),
                                        fixed = TRUE))), 
           lincomb = all.lc,
           control.compute = list(smtp = "stiles"),
           verbose = TRUE)
 
-par(mfrow = c(1, 3))
+par(mfrow = c(2, 2))
 plot(r$summary.lincomb.derived$mean, all.lc.mean)
 abline(a=0,b=1)
 plot(rr$summary.lincomb.derived$mean, all.lc.mean)
 abline(a=0,b=1)
 plot(r$summary.lincomb.derived$mean, rr$summary.lincomb.derived$mean)
+abline(a=0,b=1)
+
+plot(log(r$summary.lincomb.derived$sd), log(rr$summary.lincomb.derived$sd))
 abline(a=0,b=1)

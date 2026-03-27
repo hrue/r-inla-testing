@@ -1,8 +1,10 @@
-##inla.setOption(inla.mode = "experimental")
+INLA:::inla.my.update(b = T)
+inla.setOption(inla.call = NULL)
+inla.setOption(num.threads = "1:1:1")
 rho = 0.1
 n = 30000
 z = rnorm(n, sd=0.2)
-Ntrials = sample(5:50, n, replace=TRUE)
+Ntrials = sample(5:200, n, replace=TRUE)
 eta = 1 + z
 p.eta = exp(eta)/(1+exp(eta))
 a = p.eta * (1-rho)/rho
@@ -11,10 +13,9 @@ p = rbeta(n, a, b)
 y = rbinom(n, Ntrials, p)
 s = 1
 
-inla.setOption(smtp = "taucs")
-
 formula = y ~ 1 + z
 data = data.frame(y, z)
+if (FALSE)
 r = inla(formula,
          data = data,
          family = "betabinomial",
@@ -24,10 +25,11 @@ rr = inla(formula,
           data = data,
           inla.call = "inla.mkl.work", 
           family = "betabinomial",
-          Ntrials=Ntrials)
-summary(r)
+          Ntrials=Ntrials,
+          verbose = TRUE)
+##summary(r)
 summary(rr)
 
-r$logfile[grep("stage1", r$logfile)]
-rr$logfile[grep("stage1", rr$logfile)]
-r$mlik - rr$mlik
+##r$logfile[grep("stage1", r$logfile)]
+##rr$logfile[grep("stage1", rr$logfile)]
+##r$mlik - rr$mlik

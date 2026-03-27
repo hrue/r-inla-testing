@@ -14,13 +14,13 @@ prior.expression = "expression:
             logdens = log(b^a) - lgamma(a)
                       + (a-1)*log_precision - b*precision;
             log_jacobian = log_precision;
-            return(logdens + log_jacobian);"
+            return(logdens +log_jacobian);"
 
-lprec = seq(-10, 10, len=1000)
+lprec = seq(-20, 20, len=1000)
 prior.table = paste(c("table:", cbind(lprec, prior.function(lprec))),
         sep = "", collapse = " ")
 
-n = 100
+n = 1000
 y = rnorm(n)
 
 r = inla(y~1,
@@ -38,16 +38,11 @@ rr = inla(y~1,
                         prec = list(
                                 prior = prior.expression))))
 
-rrr = inla(y~f(idx, group = g,
-    control.group = list(
-        hyper= list(
-            theta = list(
-                prior = prior.table)))), 
-        data = data.frame(y, idx = rep(1, n), g = 1:n),
-        control.family = list(
-                hyper = list(
-                        prec = list(
-                            prior = prior.table))),
-    keep=TRUE)
+rrr = inla(y~1, 
+           data = data.frame(y), 
+           control.family = list(
+               hyper = list(
+                   prec = list(
+                       prior = prior.table))))
 
 round(c(r$mlik[1], rr$mlik[1], rrr$mlik[1]), 5)
