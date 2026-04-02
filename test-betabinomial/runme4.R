@@ -1,6 +1,3 @@
-INLA:::inla.my.update(b = T)
-inla.setOption(inla.call = NULL)
-inla.setOption(num.threads = "1:1:1")
 rho = 0.1
 n = 30000
 z = rnorm(n, sd=0.2)
@@ -15,21 +12,13 @@ s = 1
 
 formula = y ~ 1 + z
 data = data.frame(y, z)
-if (FALSE)
-r = inla(formula,
-         data = data,
-         family = "betabinomial",
-         Ntrials=Ntrials)
-
 rr = inla(formula,
           data = data,
-          inla.call = "inla.mkl.work", 
+          ##inla.call = "inla.mkl.work", 
           family = "betabinomial",
+          num.threads = "1", 
           Ntrials=Ntrials,
+          safe = FALSE, 
+          keep = T, 
           verbose = TRUE)
-##summary(r)
 summary(rr)
-
-##r$logfile[grep("stage1", r$logfile)]
-##rr$logfile[grep("stage1", rr$logfile)]
-##r$mlik - rr$mlik
