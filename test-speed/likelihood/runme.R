@@ -1,3 +1,2 @@
-##INLA:::inla.my.update()
-inla.setOption(inla.call = "inla.mkl")
+INLA:::inla.my.update(b=T)
 source("core.R")

@@ -3,17 +3,7 @@ library(INLAspacetime)
 library(inlabru)
 library(sf)
 
-## some INLA setup
-if(Sys.info()["user"]=="eliask") {
-    inla.setOption(
-        inla.call = "remote",
-        num.threads = "8:2", 
-        pardiso.license = "~/.pardiso.lic",
-        safe = FALSE,
-        inla.call = "remote")
-}
-
-inla.setOption(inla.call = "inla.mkl.work", verbose = TRUE, safe = FALSE, keep = TRUE)
+inla.setOption(verbose = TRUE, safe = FALSE, keep = TRUE)
 
 rxy <- c(10, 5) ## size of spatial domain
 nt <- 30 ## number of time points
@@ -122,6 +112,7 @@ mcomps <- ~ Intercept(1) +
             time = tloc),
         model = stmodel)
 
+inla.setOption(inla.call = "", keep = TRUE, safe = FALSE)
 ## modelfit
 result <- bru(
     mcomps,

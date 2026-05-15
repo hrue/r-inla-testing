@@ -63,7 +63,7 @@ negloglik_gc_rate <- function(par, y, X, T) {
 # -------------------------------------------------------------
 # Simulate data
 # -------------------------------------------------------------
-n <- 300
+n <- 3000
 x <- rnorm(n, sd = 0.3)
 X <- cbind(1, x)
 
@@ -72,9 +72,10 @@ T_obs <- runif(n, 0.333, 3)  # e.g., different durations per unit
 
 alpha_true <- 2.0
 gamma_true <- c(1.0, -0.6)  # log(rate) = gamma0 + gamma1 * x
-gamma_true <- c(1.0, -0.6)  # log(rate) = gamma0 + gamma1 * x
 
-lambda_true <- as.numeric(exp(X %*% gamma_true))  # true rate
+E <- runif(n)
+E <- rep(1, n)
+lambda_true <- as.numeric(exp(log(E) + X %*% gamma_true))  # true rate
 mu_true <- lambda_true * T_obs                    # expected count
 beta_true <- alpha_true * lambda_true + 0.5 / T_obs
 
@@ -105,5 +106,6 @@ r <- inla(Y ~ 1 + x,
           family = "gammacountmean",
           verbose = T,
           data = list(Y = inla.mdata(y, T_obs), x = x))
+##          data = list(Y = inla.mdata(y, T_obs, E), x = x))
 print(c(alpha_est,  gamma_est))
 summary(r)
