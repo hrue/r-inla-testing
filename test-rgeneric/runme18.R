@@ -1,6 +1,7 @@
 iid.model <- function (cmd = c("graph", "Q", "mu", "initial", "log.norm.const", 
                                "log.prior", "quit"), theta = NULL) 
 {
+    library("Matrix")
     ## this parameterisation is for stdev in the interval [LOW, HIGH]
     envir <- parent.env(environment())
     interpret.theta <- function() {

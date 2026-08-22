@@ -1,22 +1,17 @@
 n = 3000
-p = 1E-12
+p = 1E-12 ## treated as zero
 size = 10
 y = numeric(n)
-x = rnorm(n)
+x = rnorm(n, sd = 0.3)
 intercept = 0
 
 for(i in 1:n) {
-    pp = p
-    if (runif(1) < pp) {
-        y[i] = 0
-    } else {
-        m = exp(intercept + x[i])
-        prob = size/(size + m)
-        done <- FALSE
-        while(!done) {
-            y[i] = rnbinom(1, size=size, prob=prob)
-            done <- (y[i] > 0)
-        }
+    m = exp(intercept + x[i])
+    prob = size/(size + m)
+    done <- FALSE
+    while(!done) {
+        y[i] = rnbinom(1, size=size, prob=prob)
+        done <- (y[i] > 0)
     }
 }
 
