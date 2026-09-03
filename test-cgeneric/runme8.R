@@ -24,7 +24,7 @@ Cmatrix@j <- Cmatrix@j[idx]
 Cmatrix@x <- Cmatrix@x[idx]
 
 cmodel <- inla.cgeneric.define(model = "inla_cgeneric_generic0_model",
-                               shlib = "cgeneric-demo.so",
+                               shlib = NULL, ##"cgeneric-demo.so",
                                n = n,
                                aa.double = as.double(1:10),
                                aa.int = as.integer(1:10),
@@ -42,5 +42,6 @@ rc <- inla(
             prec = list(
                 initial = log(1/s^2),
                 fixed = TRUE))),
-    verbose = TRUE)
+    verbose = TRUE,
+    keep = TRUE)
 
