@@ -42,7 +42,7 @@ robeta <- function(eta, k1, k2, precision, debug = FALSE)
     return (x)
 }
 
-n <- 10000
+n <- 10^5
 x <- rnorm(n, sd = 0.2)
 eta <- 0 + x
 k1 <- -2
@@ -55,6 +55,8 @@ r <- inla(y ~ 1 + x,
           family = "obeta",
           control.inla = list(cmin = 0), 
           verbose = TRUE,
+          keep = TRUE,
+          safe = FALSE, 
           control.compute = list(cpo = TRUE))
 
 summary(r)

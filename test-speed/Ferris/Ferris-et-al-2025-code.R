@@ -196,13 +196,14 @@ data = data %>%
 head(data)
 
 # Plot
-plot(data$Depth_m, data$Wave_Energy, pch = 16, 
-     col = as.numeric(cut(data$SWH_mean, breaks = 5)),
-     xlab = "Depth (m)", ylab = "Wave Energy (J/m-2)", 
-     main = "Wave Energy (WAVERYS H_s, WP, Local Depth)")
-legend("topright", legend = levels(cut(data$SWH_mean, breaks = 5)), 
-       col = 1:5, pch = 16, title = "H_s (m)")
-
+if (FALSE) {
+    plot(data$Depth_m, data$Wave_Energy, pch = 16, 
+         col = as.numeric(cut(data$SWH_mean, breaks = 5)),
+         xlab = "Depth (m)", ylab = "Wave Energy (J/m-2)", 
+         main = "Wave Energy (WAVERYS H_s, WP, Local Depth)")
+    legend("topright", legend = levels(cut(data$SWH_mean, breaks = 5)), 
+           col = 1:5, pch = 16, title = "H_s (m)")
+}
 # Process no-data values in hydro data
 data$Water_Velocity[data$Water_Velocity == -9999] = NA
 data$Water_Direction[data$Water_Direction == -9999] = NA
@@ -219,25 +220,26 @@ str(data)
 data$Percent_Bleaching = as.numeric(data$Percent_Bleaching)
 data$Percent_Bleaching = data$Percent_Bleaching / 100
 
-hist(data$Percent_Bleaching)
+##hist(data$Percent_Bleaching)
 
 data$Ocean_Name[which(data$Ocean_Name == "Red Sea")] = "Indian"
 data$Ocean_Name[which(data$Ocean_Name == "Arabian Gulf")] = "Indian"
 
-# get polar alignment
-par(mfrow = c(1,1))
-data$Polar_Alignment = -(data$Equatorial_Alignment)
-plot(data$Equatorial_Alignment ~ data$Polar_Alignment)
+if (FALSE) {
+                                        # get polar alignment
+    par(mfrow = c(1,1))
+    data$Polar_Alignment = -(data$Equatorial_Alignment)
+    plot(data$Equatorial_Alignment ~ data$Polar_Alignment)
 
-# check agreement between measured and derived depth
-plot(data$Depth_m ~ data$Depth, xlab = "Derived Depth (m)", ylab = "Measured Depth")
+                                        # check agreement between measured and derived depth
+    plot(data$Depth_m ~ data$Depth, xlab = "Derived Depth (m)", ylab = "Measured Depth")
 
 
-png(file.path(results_dir, 'DepthVal_042225.png'), width = 6, height = 6, units = "in", res = 300)
-par(mfrow = c(1,1), cex.lab = 1.5, cex.axis = 1.25, mar = c(5, 6, 3, 2))
-plot(data$Depth_m ~ data$Depth, xlab = "Derived Depth (m)", ylab = "Measured Depth (m)", cex = 0.5); abline(0, 1, col = "blue")
-dev.off()
-
+    png(file.path(results_dir, 'DepthVal_042225.png'), width = 6, height = 6, units = "in", res = 300)
+    par(mfrow = c(1,1), cex.lab = 1.5, cex.axis = 1.25, mar = c(5, 6, 3, 2))
+    plot(data$Depth_m ~ data$Depth, xlab = "Derived Depth (m)", ylab = "Measured Depth (m)", cex = 0.5); abline(0, 1, col = "blue")
+    dev.off()
+}
 # remove sparse sampling beyond 35 degrees
 data = data[abs(data$Latitude_Degrees) <= 35, ] # remove sparse sampling above 35 deg
 range(data$Latitude_Degrees)
@@ -309,9 +311,8 @@ cloud_plot = plot.var(data = data, var = "Cloud_Cover", xlab = "Cloud Frequency 
 
 fig2 = sst_plot | par_plot | mhw_plot | cloud_plot
 
-fig2
-
-ggsave(file.path(results_dir, "Figure2_042325b.png"), width = 10, height = 3.5, units = "in") # neatline added externally in Canva
+##fig2
+##ggsave(file.path(results_dir, "Figure2_042325b.png"), width = 10, height = 3.5, units = "in") # neatline added externally in Canva
 
 
 # check for collinearity
@@ -319,7 +320,8 @@ ggsave(file.path(results_dir, "Figure2_042325b.png"), width = 10, height = 3.5, 
 # define continuous predictors
 colnames(data)
 data$Absolute_Latitude = abs(data$Latitude_Degrees)
-continuous_vars = c('Depth', 'Depth_m' , 'Slope_Degrees', 'Polar_Alignment', 'Bathymetric_Position_Index', 'AdjSD', 'Rugosity',
+continuous_vars = c('Depth', 'Depth_m' , 'Slope_Degrees', ## 'Polar_Alignment',
+                    'Bathymetric_Position_Index', 'AdjSD', 'Rugosity',
                     'Water_Velocity', 'Absolute_Latitude',
                     'PAR_mean', 'Cloud_Cover',
                     'Turbidity_mean',
@@ -329,6 +331,7 @@ continuous_vars = c('Depth', 'Depth_m' , 'Slope_Degrees', 'Polar_Alignment', 'Ba
 
 # convert variables to numeric
 for (var in continuous_vars) {
+    print(var)
   data[[var]] = as.numeric(data[[var]])
 }
 
@@ -338,11 +341,12 @@ names(df)#
 df = subset(df, select = continuous_vars)
 M = cor(df, use = "pairwise.complete.obs")
 
-par(mfrow = c(1,1))
-png(file.path(results_dir, 'corrplot_042225.png'), width = 13, height = 13, units = "in", res = 600)
-corrplot(M, method = "number")
-dev.off()
-
+if (FALSE) {
+    par(mfrow = c(1,1))
+    png(file.path(results_dir, 'corrplot_042225.png'), width = 13, height = 13, units = "in", res = 600)
+    corrplot(M, method = "number")
+    dev.off()
+}
 # standardizing function
 standardize_function = function(x){
   x.standardized = (x - mean(na.omit(x))) / sd(na.omit(x))
@@ -366,20 +370,22 @@ data1 = data.frame(Site = data$Site_ID,
 
 # iterate over variables, standardize, and add to above dataframe
 for (var in continuous_vars) {
-  print(var)
-  data1[[var]] = standardize_function(data[[var]])
-  par(mfrow = c(1, 2))
-  hist(data[[var]], main = var)
-  hist(data1[[var]], main = paste('Standardized', var))
-  par(mfrow = c(1,1))
+    print(var)
+    data1[[var]] = standardize_function(data[[var]])
+    if (FALSE) {
+        par(mfrow = c(1, 2))
+        hist(data[[var]], main = var)
+        hist(data1[[var]], main = paste('Standardized', var))
+        par(mfrow = c(1,1))
+    }
 }
 
 # set interaction var
 data1$SST_PAR = data1$SST_mean * data1$PAR_mean
 
 # check distribution of response
-par(mfrow = c(1,1))
-hist(data1$Percent_Bleaching)
+#par(mfrow = c(1,1))
+#hist(data1$Percent_Bleaching)
 
 # whoa! check number of zeros
 num_zeros = sum(data1$Percent_Bleaching == 0, na.rm = TRUE)
@@ -441,7 +447,8 @@ w.index.globe = inla.spde.make.index(
   n.repl  = 1)
 
 # set X dataframe for model
-X_Global = data.frame(Intercept = rep(1, nrow(Global)), 
+X_Global = data.frame(
+                      Intercept = rep(1, nrow(Global)), 
                       # random effects
                       Country = factor(Global$Country),
                       Ocean = factor(Global$Ocean),
@@ -459,7 +466,7 @@ X_Global = data.frame(Intercept = rep(1, nrow(Global)),
                       Depth = Global$Depth_m,
                       Rugosity = Global$AdjSD,
                       Reef_Slope = Global$Slope_Degrees,
-                      Polar_Alignment = Global$Polar_Alignment,
+##                      Polar_Alignment = Global$Polar_Alignment,
                       Bathymetric_Position = Global$Bathymetric_Position_Index,
                       Current_Velocity = Global$Water_Velocity,
                       Wave_Energy = Global$Wave_Energy,
@@ -527,6 +534,8 @@ Stack = inla.stack(
   )
 )
 
+
+
 inla.setOption(verbose = TRUE, keep = TRUE, safe = FALSE, inla.call = "")
 
 
@@ -535,7 +544,8 @@ fit.model = function(Variables) {
   prec.prior = list(prec = list(param = c(0.001, 0.001)))
   f0 = as.formula(paste0("y ~ -1 + Intercept +", paste0(Variables, collapse=" + ")))
   I_global = inla(f0,
-                  family = "obeta", # thank you, Havard!
+                  inla.call = "inla.mkl.work", 
+                  family = "obeta", 
                   data = inla.stack.data(Stack),
                   control.inla = list(cmin = 0),
                   control.compute = list(dic=TRUE, waic=TRUE, cpo=TRUE),
