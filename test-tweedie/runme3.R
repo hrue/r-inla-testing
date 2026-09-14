@@ -1,9 +1,7 @@
-inla.setOption(num.threads = "1:1")
-
 library(tweedie)
-n <- 10000
+n <- 10^5
 x <- rnorm(n, sd = 1)
-eta <- 5 + x
+eta <- 2 + x
 mu <- exp(eta)
 
 p <- 1.25
@@ -13,46 +11,30 @@ for(i in 1:n) {
     y[i] <- rtweedie(1, xi = p, mu = mu[i], phi = phi)
 }
 
-run <- function() {
-    r <- inla(y ~ 1 + x + f(idx),
-              data = data.frame(y, x, idx = 1:n),
-              family = "tweedie",
-              control.family = list(
-                  hyper = list(
-                      phi = list(initial = 0),
-                      p = list(initial = inla.models()$likelihood$tweedie$hyper$theta1$to.theta(p), 
-                               fixed = FALSE))), 
-              control.fixed = list(prec.intercept = 1, prec = 1), 
-              control.inla = list(cmin = 0), 
-              control.compute = list(cpo = TRUE), 
-              inla.call = "inla.mkl.work", 
-              verbose = !T)
-    summary(r)
-    return(r)
-}
+INLA:::inla.my.update()
+inla.setOption(num.threads = "4:1:1")
 
-run.orig <- function() {
-    r <- inla(y ~ 1 + x + f(idx),
-              data = data.frame(y, x, idx = 1:n),
-              family = "tweedie",
-              control.family = list(
-                  hyper = list(
-                      phi = list(initial = 0),
-                      p = list(initial = inla.models()$likelihood$tweedie$hyper$theta1$to.theta(p), 
-                               fixed = FALSE))), 
-              control.fixed = list(prec.intercept = 1, prec = 1), 
-              control.inla = list(cmin = 0), 
-              control.compute = list(cpo = TRUE), 
-              verbose = !T)
-    summary(r)
-    return(r)
-}
+r <- inla(y ~ 1 + x + f(idx),
+          data = data.frame(y, x, idx = 1:n),
+          family = "tweedie",
+          control.family = list(
+              hyper = list(
+                  phi = list(initial = 0),
+                  p = list(initial = inla.models()$likelihood$tweedie$hyper$theta1$to.theta(p), 
+                           fixed = FALSE))), 
+          control.fixed = list(prec.intercept = 1, prec = 1), 
+          control.inla = list(cmin = 0), 
+          verbose = T)
 
-r.orig <- run.orig()
-r <- run()
-
-r$cpu
-r.orig$cpu
-
-
-plot(r$cpo$pit, r.orig$cpo$pit)
+rr <- inla(y ~ 1 + x + f(idx),
+          data = data.frame(y, x, idx = 1:n),
+          family = "tweedie",
+          control.family = list(
+              hyper = list(
+                  phi = list(initial = 0),
+                  p = list(initial = inla.models()$likelihood$tweedie$hyper$theta1$to.theta(p), 
+                           fixed = FALSE))), 
+          control.fixed = list(prec.intercept = 1, prec = 1), 
+          control.inla = list(cmin = 0),
+          inla.call = "/home/hrue/bin/inla.mkl.work", 
+          verbose = T)
